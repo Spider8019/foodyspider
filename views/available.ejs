@@ -1,0 +1,25 @@
+<%- include('header') -%>
+
+<h1 class="availableHeading">available items</h1>
+
+<i class="availableNote">*Select Item by clicking on item Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, animi. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae, deserunt?Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil autem corrupti labore! Impedit adipisci cum vitae natus est quae nemo.</i>
+
+<div class="available-items">
+    <% availableItems.forEach((item)=>{ %>
+        <a href="<%= 'order/'+ item._id %>"><div class="available-item">
+            <p class="availableItemPrice">INR <%= item.price.sort()[0] %></p>
+            <div class="available-item-text">
+                <h1><%= item.name %></h1>
+                <p class="totalOrderCount"><%= item.orderCount %>+ orders</p>
+                <p><%= item.description.slice(0,30) %></p>
+            </div>
+            <div class="available-item-img">
+               <img src="data:image/<%=item.itemImg.contentType%>;base64,<%=item.itemImg.data.toString('base64')%>">
+            </div>
+        </div>
+        </a>
+    <% }) %>
+</div>
+
+<script src="/order-calc.js"></script>
+<%- include('footer') -%>

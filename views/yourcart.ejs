@@ -1,0 +1,64 @@
+<%- include('header'); -%>
+<h1 class="yourCartUser"><%= userAccount.name %>, Your Cart is here</h1>
+<div class="cartFlex">
+    <div class="cartItems">
+        <%
+        if(userAccount.addToCart.length>0) 
+        {for(var i=0;i<userAccount.addToCart.length;i++){ %>
+            <div class="cartItem">
+                <div class="cartItemImg">
+                    <img src="data:image/<%=items[i].itemImg.contentType%>;base64,<%=items[i].itemImg.data.toString('base64')%>">
+                </div>
+                <div class="cartItemText">
+                    <h1><%= items[i].name %></h1>
+                    <h3>Quantities: <%= userAccount.addToCart[i].quantity.split("$") %>
+                    <br>Sizes: <%= items[i].size %></h3>
+                    <p>INR <%= returnTotalForCartItem(userAccount.addToCart[i].quantity.split("$"),items[i].price) %></p>
+                </div>
+                <div class="cartItemControls">
+                    <a href="/removefromcart/<%= userAccount.addToCart[i]._id%>/userid/<%= userAccount._id %>">Remove</a>
+
+                    <a href="/getdeliveryinfo/itemid/<%=userAccount.addToCart[i].item+'.'%>/quantity/<%=userAccount.addToCart[i].quantity+'.'%>">Purchase</a>
+                </div>
+            </div>
+        <% }} 
+        else{%>
+            <h3><i>Your cart is empty.</i></br> Do you waana add something....</h3>
+        <%}%>    
+    </div>
+    <div class="yourFullTotal">
+        <p>Total Bill for your cart is INR <span id="totalCart"></span></p>
+        <a href=""id="purchaseAll">Purchase All</a>
+    </div>
+</div>
+<script>
+   
+    var userAccountATC=<%- JSON.stringify(userAccount.addToCart) %>
+    //  console.log(userAccountATC)
+    var itemids=""   
+    var itemquan=""
+    userAccountATC.forEach((item)=>{
+         itemids+= item.item + "."
+          itemquan += item.quantity+"."
+    })
+    var purchaseAllLink="/getdeliveryinfo/itemid/"+itemids+"/quantity/"+itemquan;
+    document.getElementById("purchaseAll").href=purchaseAllLink
+</script>
+<%
+  function returnTotalForCartItem(quantity,price){
+    var subtotal=0
+     for(var i=0;i<quantity.length-1;i++){
+         subtotal+=quantity[i]*price[i]
+     }
+     return subtotal
+} %>
+<script>
+    var cartTotal=0;
+    var x=document.querySelectorAll(".cartItemText p")
+    x.forEach((y)=>{
+         cartTotal+=parseInt(y.innerHTML.slice(3,y.innerHTML.length))
+    })
+    document.getElementById("totalCart").innerHTML=cartTotal
+
+</script>
+<%- include('footer'); -%>

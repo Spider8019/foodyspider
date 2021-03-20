@@ -1,0 +1,107 @@
+<%- include('header'); -%>
+<div class="profileBasicsButton">
+    <div class="basicProfileInfo">
+        <h1><%= user.name %></h1>
+        <i><%= user.email %></i>
+    </div>
+    <button onclick="showReceiptForm()">View Receipts</button>
+</div>
+
+
+<div class="purchaseProfileContainer">
+    <div class="yourPWheading">
+        <p>Thanks for <br>shopping with us... </p>
+    </div>
+    <div class="yourpurchases">
+    <% purchase.forEach((item)=>{ %>
+        <div class="yourpurchase">
+            <p>
+                <%= item.name %>
+            </p>
+            <div class="orderAgain">
+                <i class="fas fa-ellipsis-v"></i>
+                <div class="purchaseItemDropdown">
+                    <a href=<%= "/order/"+ item._id %>>Order Again</a>
+                    <button onclick="showReviewForm(this)">Give Review</button>
+
+                </div>
+            </div>
+            <div class="yourpurchaseImg">
+                <img src="data:image/<%=item.itemImg.contentType%>;base64,<%=item.itemImg.data.toString('base64')%>">
+            </div>
+            <div class="reviewContainer">
+                <button onclick="hideReviewForm(this)">+</button>
+                <div class="your-review">
+                    <form class="your-review-form" action="/review" method="POST">
+                        <h1>Your review matters</h1>
+                        <input type="text" name="itemid"     value="<%= item._id %>" style="display:none">
+                        <input type="text" name="userid" value="<%= user._id %>" style="display:none;">
+                        <input type="range" name="stars" min='0' max='100' required>
+                        <input type="text" name="review" maxlength="200" placeholder="Your Review matters for us !!!" required />
+                        <input type="submit">
+                    </form>
+                </div>
+            </div>
+            <div class="receiptContainer">
+                <button onclick="hideReviewForm(this)">+</button>
+                <h1>Your Reciepts</h1>
+                <div class="receiptDiv">
+                   
+                   <% for(var i=0;i<yourOrder.length;i++){ %>
+                       <div class="receiptOrder">
+                            <% var src=""
+                            if(yourOrder[i].delivered==0) 
+                            src="./images/deliveryboy.gif"
+                            else if(yourOrder[i].delivered==1) 
+                            src="./images/delivered.jpg"
+                            else if(yourOrder[i].delivered==-1)
+                            src="./images/inprocess.gif"
+                         %>
+                            <div class="orderStatusLogo">
+                                <img src=<%=src %>>
+                                
+                            </div>
+
+                           <p><b>Reciever: </b><%= yourOrder[i].reciever%></p>
+                            <p>
+                               <b>Order item: </b> <%= yourOrder[i].item %>
+                            </p>                 
+                            <p>                 
+                              <b>Order count: </b> 
+                              <%= yourOrder[i].quantity %>
+                            </p>
+                            <p>
+                                <b>Delivery Address: </b>
+                                <%= yourOrder[i].fulladdress %>
+                            </p>
+                            <p>
+                                <b>Email: </b><%= yourOrder[i].email %>
+                            </p>
+                            <p>
+                                <b>Phone: </b><%= yourOrder[i].contact %>
+                            </p>
+                            <p>
+                                <b>Date and Time: </b><%= yourOrder[i].date %>
+                            </p>
+
+                       </div>
+                    <%} %>
+                </div>
+            </div>
+        </div>
+
+    <% }) %>
+</div>
+</div>
+<script>
+    function hideReviewForm(THIS){
+        THIS.parentElement.style.display="none";
+    }
+    function showReviewForm(THIS){
+        THIS.parentElement.parentElement.nextElementSibling.nextElementSibling.style.display="grid"
+    }
+    function showReceiptForm() {
+            document.querySelector(".receiptContainer").style.display = "block"
+        }
+</script>
+<%- include('footer'); -%>

@@ -1,0 +1,108 @@
+<%-  include('header'); -%>
+
+
+<h1 class='placeOrderHeading'>Delivery Location</h1>
+<!-- <p class="placeOrderContent">Your Order Total is 8019</p> -->
+<div class="align-horizontal-center">
+<form class="placeOrderForm" action="/getdeliveryinfo" method="POST">
+    <input type="text" name="reciever" value="<%= username %>"placeholder="Deleiver to" required>
+    <input type="email" name="email" value="<%= usermail %>"placeholder="Reviever's mail id" required>
+    <select  name="city" class="city" onchange='setCity(this.value)' required>
+    </select>    
+    <input type="text" name="landmark" placeholder="Landmark" required>
+    <input type="text" name="colony" placeholder="Colony" style="width:30%;" required>
+    <select name="zone" style="width:30%;" class="zone" required>
+    </select>
+    <input type="text" name="flat" id="" placeholder="Flat Number/Street" style="width:30%;" required>
+    <input type="text" name="contactnumber" minlength="10" maxlength="10" placeholder="Contact Number" style="width:30%;" required>
+    <div class="paymentOptions">
+        <label class="radioOuterContainer">Cards
+            <input name="paymentMethod" type="radio" checked="true" value="card">
+            <span class="radioInnerContainer">
+                <span class="radioSpan"><i class="far fa-credit-card"></i></span>
+            </span>
+        </label>
+        <label class="radioOuterContainer">Cash On Delivery
+            <input name="paymentMethod" type="radio" checked="true" value="cod">
+            <span class="radioInnerContainer">
+                <span class="radioSpan"><i class="fas fa-wallet"></i></span>
+            </span>
+        </label>
+    </div>
+    <input type="text" name="item" id="itemsid" style="display:none">
+    <input type="text" name="quantities" value="<%= quantities %>" style="display:none">
+    <input type="submit" value="proceed to payment">
+</form>
+</div>
+<div class="align-horizontal-center">
+<div class="placeOrderIQ">
+
+    <% for(var j=0;j<items.length;j++){ %>
+     <div>
+        <p>
+            <b>Order Name: </b><%= items[j].name %>
+        </p>
+
+        <p>
+        <b>Order Description: </b>
+        <% for(var i=0;i<quantities.split(".")[j].split("$").length-1;i++){ %>
+            <%= quantities.split(".")[j].split('$')[i] %>(<%= items[j].size[i] %>)
+        <% } %> 
+        </p>
+    </div>
+     <%} %>
+</div>
+</div>
+
+<script>
+    var itemsName=[]
+    var items=<%- JSON.stringify(items) %>
+    for(var i=0;i<items.length;i++)
+    {
+        itemsName.push(items[i].name)
+    }
+    document.getElementById("itemsid").value=itemsName
+</script>
+<script>
+    var array = [{
+            city: "Ayodhya(Faizabad)",
+            zone: ["Naka", "Rekabganj", "Chowk", "Niyawan", "Shadatganj", "Fatehganj"]
+        }, {
+            city: "Lucknow",
+            zone: ["Gomti Nagar", "Polytechnic", "Hazratganj", "Charbagh", "Alambagh"]
+        }]
+
+
+        for (var i = 0; i < array.length; i++) {
+            var city = document.createElement("option")
+            city.innerHTML = array[i].city
+            city.value = array[i].city
+            document.querySelector(".city").append(city)
+        }
+        for (var i = 0; i < array[0].zone.length; i++) {
+            var zone = document.createElement("option")
+            zone.innerHTML = array[0].zone[i]
+            zone.value = array[0].zone[i]
+            document.querySelector(".zone").append(zone)
+        }
+        function setCity(city) {
+
+            var zones = document.querySelector(".zone");
+            while (zones.firstChild) {
+                zones.removeChild(zones.firstChild)
+            }
+            var x = -1;
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].city === city) { x = i; break; }
+            }
+            for (var i = 0; i < array[x].zone.length; i++) {
+                var state = document.createElement("option")
+                state.innerHTML = array[x].zone[i]
+                state.value = array[x].zone[i]
+                document.querySelector(".zone").append(state)
+            }
+
+        }
+</script>
+
+<%-  include('footer'); -%>

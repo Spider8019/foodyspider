@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon  -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <!-- custom css -->
+    <link rel="stylesheet" href="styles.css">
+    <title>Signup - Pizza Boys</title>
+    <!-- font awesome  -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <!-- animate css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- jquery cdn -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+
+<body>
+    <h1 class="loginSignHeading">PIZZA BOYS</h1>
+    <div class="loginSignContainer">
+        <h1 class="loginSignContainerHeading animate__animated animate__flipInY">hurry up !!</h1>
+        <div class="loginSign">
+            <div class="loginSignContent">
+                <h1>Lorem, ipsum dolor.</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellat obcaecati quae et illum itaque a
+                    adipisci quo, iusto, rem cupiditate sequi voluptatum possimus
+                    excepturi minus consequuntur molestiae. Magni alias eligendi laborum explicabo vitae<i
+                        class='fas fa-pepper-hot'></i>
+                </p>
+                <b id="availav">spiDer8019</b>
+            </div>
+            <div class="loginSignFormDiv">
+                <p>Sign Up</p>
+                <form class="loginSignForm" action="/signup" method="POST">
+                    <input type="text" name="userName" placeholder="user name" required>
+                    <input type="email" id="signupemail" name="email" placeholder="email" required autocomplete="off">
+                    <input type="password" name="password" minlength=8 placeholder="password" required>
+                    <input id="submitsingup" type="submit" value="signup">
+                </form>
+                <p>Already have account?<a href="/login">Login</a></p>
+            </div>
+        </div>
+    </div>
+    <section class="loginSignContainerFooter">
+        <ul>
+            <li><a href=""><i class="fab fa-instagram"></i></a></li>
+            <li><a href=""><i class="fab fa-facebook"></i></a></li>
+            <li><a href=""><i class="fab fa-twitter"></i></a></li>
+        </ul>
+    </section>
+
+</body>
+<script>
+   $(document).ready(function () {
+
+        $("#signupemail").keyup(function () {
+            $.ajax({
+                url: '/checkforavailmail',
+                data: { email: $("#signupemail").val() },
+                type: 'post',
+                dataType: "html",
+                success: function (data) {
+                    $("#availav").html(data)
+                    if(data=="Available")
+                     {
+                         $("#submitsingup").css({"pointer-events":"auto","background":"rgb(110,7,7)"})
+                     }
+                    else{
+                        $("#submitsingup").css({ "pointer-events": "none", "background": "rgb(110,7,7,0.5)" })
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error: ' + error.message);
+                },
+            });
+        })
+    });
+</script>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Orders admin side</title>
+</head>
+<body>
+    <h1 class="adminorderheading">Orders recieved</h1>
+
+    <div class="orderunordercontainer">
+        <div class="orderunorder">
+            <h2>Orders uncompleted(<%= ordersnotcompleted.length %>)</h2>
+            <div class='ordersnotcompleted'>   
+             <% 
+                if(ordersnotcompleted.length!=0)
+                {for(var i=0;i<ordersnotcompleted.length;i++){%>
+                <div class="orderNotCompleted">
+                    <% var src="" 
+                    if(ordersnotcompleted[i].delivered==0) 
+                        src="./images/deliveryboy.gif";
+                        else if(ordersnotcompleted[i].delivered==-1)
+                        src="./images/inprocess.gif"
+                    %>
+                        <img src=<%= src %> class="adminsymbol">
+                    <p><b>OrderID:</b><%= ordersnotcompleted[i]._id%></p>
+                    <p><b>Reciever: </b>
+                        <%= ordersnotcompleted[i].reciever%>
+                    </p>
+                    <p>
+                        <b>Order item: </b>
+                        <%= ordersnotcompleted[i].item %>
+                    </p>
+                    <p> <b>Order count: </b>
+                        <%= ordersnotcompleted[i].quantity %>
+                    </p>
+                    <p>
+                        <b>Delivery Address: </b>
+                        <%= ordersnotcompleted[i].fulladdress %>
+                    </p>
+                    <p>
+                        <b>Email: </b>
+                        <%= ordersnotcompleted[i].email %>
+                    </p>
+                    <p>
+                        <b>Phone: </b>
+                        <%= ordersnotcompleted[i].contact %>
+                    </p>
+                    <p>
+                        <b>Date and Time: </b>
+                        <%= ordersnotcompleted[i].date %>
+                    </p>
+                    
+                    <% if(ordersnotcompleted[i].delivered!=0){ %>
+                                    <a href="admin/orderid/<%= ordersnotcompleted[i]._id%>">Delivered from store</a>
+                    
+                        <% } %>
+
+                </div>
+            
+            <%}}%>
+            </div>
+        </div>
+        <div class="orderunorder">
+            <h2>Orders completed(<%= orderscompleted.length %>)</h2>
+            <div class="orderscompltedlist">
+            <% if(orderscompleted.length!=0){
+                for(var i=0;i<orderscompleted.length;i++){%>
+                <div class="ordercomplete">
+                    <p><b>Reciever: </b>
+                        <%= orderscompleted[i].reciever%>
+                    </p>
+                    <p>
+                        <b>Order item: </b>
+                        <%= orderscompleted[i].item %>
+                    </p>
+                    <p> <b>Order count: </b>
+                        <%= orderscompleted[i].quantity %>
+                    </p>
+                    <p>
+                        <b>Delivery Address: </b>
+                        <%= orderscompleted[i].fulladdress %>
+                    </p>
+                    <p>
+                        <b>Email: </b>
+                        <%= orderscompleted[i].email %>
+                    </p>
+                    <p>
+                        <b>Phone: </b>
+                        <%= orderscompleted[i].contact %>
+                    </p>
+                    <p>
+                        <b>Date and Time: </b>
+                        <%= orderscompleted[i].date %>
+                    </p>
+                </div>
+                <%}}%>
+            </div>
+        </div>
+    </div>
+    </body>
+
+<script>
+
+    var ordersnotcompleted=<%- JSON.stringify(ordersnotcompleted) %>
+    setInterval(loadDoc, 300000);
+        function loadDoc() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    while(document.querySelector(".ordersnotcompleted").firstChild){
+                        document.querySelector(".ordersnotcompleted").removeChild(document.querySelector(".ordersnotcompleted").firstChild)
+                    }
+                    JSON.parse(this.responseText).ordersnotcompleted.forEach((item)=>{
+
+                        if (item.delivered == 0)
+                            src = "./images/deliveryboy.gif";
+                        else if (item.delivered == -1)
+                            src = "./images/inprocess.gif"
+
+                        var div=document.createElement("div")
+                        div.classList.add("orderNotCompleted")
+
+                        var img=document.createElement("img")
+                        img.classList.add("adminsymbol")
+                        img.setAttribute("src",src)
+                        div.appendChild(img)
+                        var p0 = document.createElement("P")
+                        p0.innerHTML =' <b>Id:</b> '+ item._id
+                        div.appendChild(p0)
+                        var p1=document.createElement("P")
+                        p1.innerHTML='<b>Reciever:</b>'+item.reciever
+                        div.appendChild(p1)
+                        var p2 = document.createElement("P")
+                        p2.innerHTML ='<b>Order Item:</b>' + item.item
+                        div.appendChild(p2)
+                        var p3 = document.createElement("P")
+                        p3.innerHTML =' <b>Order count:</b>' + item.quantity
+                        div.appendChild(p3)
+                        var p4 = document.createElement("P")
+                        p4.innerHTML = '<b>Delivery address:</b>' + item.fulladdress
+                        div.appendChild(p4)
+                        var p5=document.createElement("P")
+                        p5.innerHTML='<b>Email:</b>'+item.email
+                        div.appendChild(p5)
+                        var p6=document.createElement("P")
+                        p6.innerHTML='<b>Phone:</b>'+item.contact
+                        div.appendChild(p6)
+                        var p7=document.createElement("P")
+                        p7.innerHTML='<b>Date and Time:</b>'+item.date
+                        div.appendChild(p7)
+                        console.log(item.delivered)
+                         if (item.delivered == -1){
+                             a=document.createElement("a")
+                             a.setAttribute("href","admin/orderid/" + item._id)
+                             a.innerHTML="Delivered from store"
+                             div.appendChild(a)
+                         }
+
+                        document.querySelector(".ordersnotcompleted").append(div)
+
+                    })
+                }
+            };
+            xhttp.open("GET", "http://localhost:3000/ordersadminside1", true);
+            xhttp.send();
+        }
+</script>
+</html>

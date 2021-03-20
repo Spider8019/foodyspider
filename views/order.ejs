@@ -1,0 +1,109 @@
+<%- include('header'); -%>
+
+<section class="order-body" id="invoice">
+    <div class="item">
+        <div class="order-item-text">
+            <p><%= result.name %></p>
+            <div class="order-items-rating">
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+            </div>
+            <h5>*estimated delivery in 30 minutes from order</h5>
+        </div>
+
+        <div class="item-image">
+            <img src="data:image/<%=result.itemImg.contentType%>;base64,<%=result.itemImg.data.toString('base64')%>">
+            <p>pizza boys</p>
+        </div>
+    </div>
+    <div class="order-form-with-bill">
+        <h1>order now</h1>
+        <div class="order-form-with-bill-inner">
+                <!-- size means large medium or small for larger its number is high -->
+                <% for(var i=0;i<result.price.length;i++){ %>
+                <div class="order-item-form-input">
+                    <label for="large"><%= result.size[i].slice(0,1).toUpperCase()+result.size[i].slice(1,result.size[i].length).toLowerCase() %></label>
+                    <div class="plusminuscount">
+                        <button onclick="changeValueDec(this,'<%= result.price[i] %>')" class="incredecre"><i class="fas fa-minus"></i></button>
+                        <p class="itemCount">0</p>
+                        <button  onclick="changeValueInc(this,'<%= result.price[i] %>')"  class="incredecre"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="order-bill">
+                    <span class="subtotalparts">0 x 0 : ₹ 0 </span>
+                </div>
+                <% } %>
+            </div>
+           
+        <div class="order-total-and-button">
+            <div class="a-line"></div>
+            <p id="total">Your total : ₹ 0</p>
+            
+            <div class="align-horizontal">
+                <form action="/addtocart" method="POST" class="placeorderformorder">
+                
+                    <input type="text" value="<%= result._id %>" name="id">
+                    <input type="text" value="" name="quantities">
+                    <input type="submit" class="del-content-submit-button" value="add to cart">
+                </form>
+                <!-- <a href="" class="del-content" id="addToCart">Add to cart</a> -->
+
+                <form action="/placeorder" method="POST" class="placeorderformorder">   
+                    <input type="text" value="<%= result._id %>" name="id">
+                    <input type="text" value="" name="quantities">
+                    <input type="submit"class="del-content-submit-button"value="place Your Order">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="more-about-dish">
+        <h1>More about Dish</h1>
+        <div class="more-about-dish-text">
+            <p><b>Total number of orders :</b><%= result.orderCount %></p>
+            <p>
+               <%= result.description %>
+            </p>
+        </div>
+    </div>
+    <div class="order-reivew">
+        <h1>Reveiws</h1>
+        <% for(var i=0;i<reviews.length;i++){ %>
+           <div class="orderreview">
+            <div class="ratingBar">
+               <p style="width:<%= reviews[i].stars%>%"></p>
+            </div>
+            <div class="review-full-order">
+            <h3></i>  <%=reviewUserNames[i].name %> <i class="fas fa-angle-double-right"></i><br><p style="font-weight:400"><%= reviews[i].date.slice(0,15) %> </i></p></h3>
+            <p>
+                <%= reviews[i].review%>
+            </p>
+            </div>
+           </div>
+        <% } %>
+    </div>
+</section>
+
+<script>
+var x=0;
+var stars = document.querySelector(".order-items-rating")
+var reviews=<%- JSON.stringify(reviews) %>
+for(var i=0;i<reviews.length;i++){
+    x+=reviews[i].stars
+}
+var xExact= Math.floor(x / (reviews.length * 20))
+var y=((x/(reviews.length*20))-xExact)
+if(y>=0.5)
+        {stars.children[xExact].classList.remove("far","fa-star")
+        stars.children[xExact].classList.add("fas","fa-star-half-alt")}
+for(var i=0;i<xExact;i++)
+{
+    stars.children[i].classList.remove("far")
+    stars.children[i].classList.add("fas")
+}
+</script>
+<script src="../js/order-calc.js"></script>
+
+<%- include('footer'); -%>

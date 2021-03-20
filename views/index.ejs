@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <!-- Favicon  -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="./fontawesome-free-5.12.1-web/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pizza Boys SPIDER8019</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <section class="header">
+        <div class="navbtn nav1"></div>
+        <div class="navbtn nav2"></div>
+        <div class="navbtn nav3"></div>
+        <div class="navbtn nav4"></div>
+        <div class="navbtn nav5"></div>
+        <div class="indexUser">
+            <p>Hey, <%=user.name %></p>
+            <div class="userDropdown">
+                <a href="wishlist/<%= user._id%>"><i class="fas fa-shopping-cart"></i> Your Wish List</a>
+                <a href="/profile"><i class="far fa-user-circle"></i> Your Account</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout from all devices</a>
+            </div>
+        </div>
+        <div class="content">
+            <p>Lorem ipsum dolor sit amet.</p>
+            <h1>PIZZA BOYS</h1>
+        </div>
+    </section>
+  
+    <!-- delicious burger section with order now button -->
+
+    <section class="del">
+        <div class="del-content">
+            <h1>⚞ <%= most[1].name %> ⚟</h1>
+            <p>
+                <%= most[1].description %>
+            </p>
+            <a href=<%= 'order/'+ most[1]._id  %> target="_blank">order now</a>
+        </div>
+        <div class="del-img">
+            <div class="del-img-content">
+                <p>
+                    ₹ <%= most[1].price[0] %><span style="font-size: 2rem">-/-<br /></span>
+                </p>
+                <p style="font-size: 1rem">
+                    nearest store : spider8019nakafzb 224001
+                </p>
+            </div>
+            <img src="data:image/<%=most[1].itemImg.contentType%>;base64,<%=most[1].itemImg.data.toString('base64')%>">
+        </div>
+    </section>
+
+
+    <section class="search-form">
+        <i class="fas fa-ice-cream"></i>
+        <i class="fas fa-hamburger"></i>
+        <i class="fas fa-cheese"></i>
+        <form action="/" method="POST">
+            <input type="text" name="Item" placeholder="Search by Item name">
+            <input type="submit">
+        </form>
+        <i class="fas fa-hotdog"></i>
+        <i class="fas fa-pizza-slice"></i>
+        <i class="fas fa-bread-slice"></i>
+    </section>
+    <!-- delicious burger section with order now button -->
+
+    <section class="del">
+        <div class="del-img">
+            <div class="del-img-content">
+                <p>
+                    ₹ <%= most[0].price[0]%><span style="font-size: 2rem">-/-<br /></span>
+                </p>
+                <p style="font-size: 1rem">
+                    nearest store : spider8019nakafzb 224001
+                </p>
+            </div>
+            <img src="data:image/<%=most[0].itemImg.contentType%>;base64,<%=most[0].itemImg.data.toString('base64')%>">
+        </div>
+        <div class="del-content">
+            <h1>⚞ <%= most[0].name %> ⚟</h1>
+            <p>
+                <%= most[0].description %>
+            </p>
+            <a href=<%='order/' + most[0]._id %> target="_blank">order now</a>
+        </div>
+    </section>
+
+    <section class="our-lucky">
+        <div class="our-lucky-boxes">
+            <i class="fa fa-car"></i>
+
+            <h2>34.5K+</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div class="our-lucky-boxes">
+            <i class="fa fa-hands-helping"></i>
+            <h2>8.9K+</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div class="our-lucky-boxes">
+            <i class="fa fa-user-alt"></i>
+            <h2>11.2K+</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div class="our-lucky-boxes">
+            <i class="fa fa-store"></i>
+            <h2>342</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+    </section>
+
+    <section class="pizza-corner">
+        <h1>⚞ PIZZZZZZZAAAA CORNER ⚟</h1>
+        <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa
+            praesentium voluptas molestias neque doloremque? Facere ad ullam
+            doloremque vitae! Officia consectetur odit dolores ex perferendis at in
+            fuga repellat ipsa!
+        </p>
+        <div class="pizzas">
+            <% for(var i=0;i<result.length;i++){ %>
+            <div class="pizza">
+                    <img src="data:image/<%=result[i].itemImg.contentType%>;base64,<%=result[i].itemImg.data.toString('base64')%>">
+                <div class="pizza-order">
+                    <h2>
+                        ₹ <%= result[i].price[0] %><span style="font-size: 1rem">-/-<br /></span>
+                    </h2>
+                    <p><%= result[i].name %></p>
+                    <a href=<%= "order/"+ result[i]._id %>>order now</a>
+                    <div class="pizza-icons">
+                        <div class="pizza-icon">
+                        <i class="fas fa-star"></i>
+                        <span><%=  avgRatings[i].stars %> <br>(Reviews: <%= avgRatings[i].reviewCount %>) </span>
+                        </div>
+                        <div class="pizza-icon">
+                        <i class="fas fa-truck"></i>
+                        <span>
+                            <%= result[i].orderCount %>
+                        </span>
+                       </div>
+                    </div>
+                </div>
+            </div>
+           <% } %>
+        </div>
+          
+    </section>
+    <section class="google-map">
+        <h1>⚞ ON GOOGLE MAP ⚟</h1>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Facere sunt
+            voluptas aspernatur ab numquam sapiente esse odit. Maiores rerum
+            repellendus quas eum id tempore nihil odio assumenda voluptatibus
+            commodi vitae aliquam iure repellat, nostrum architecto nulla ratione,
+            dolorum expedita voluptas? Ea mollitia veritatis quam ex numquam sit
+            assumenda voluptate doloribus.
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3637711.14372046!2d78.61614218686486!3d27.079031331606775!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39994e9f7b4a09d3%3A0xf6a5476d3617249d!2sUttar%20Pradesh!5e0!3m2!1sen!2sin!4v1601896966697!5m2!1sen!2sin"
+            width="100%" height="550" frameborder="0" style="border: 0" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </section>
+
+    
+    <%- include('footer'); -%>

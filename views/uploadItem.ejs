@@ -1,0 +1,23 @@
+<%- include('header.ejs'); -%>
+
+<form method="POST" action="/register" enctype="multipart/form-data">
+  <input type="text" name="name" placeholder="Enter item name" required>
+    <div>
+        <label for="">Specific Details</label>
+        <div class="specific-details" id="specific-details">
+            <i onclick="addMoreSpecificDetail(this)" class="addmore fas fa-plus"></i>
+            <div class="specific-detail animated fadeIn">
+                <input type="text" name="size" placeholder="Size of item" required>
+                <input type="text" name="price" placeholder="price for this itema" required>
+                <i onclick="removeSpecificDetail(this)" class="fas fa-times"></i>
+            </div>
+        </div>
+    </div>
+  <textarea name="description" required placeholder="Description"></textarea>
+  <input type="file" accept="image/*" name="itemImg" required>
+  <input type="submit" value="upload">
+
+ 
+</form>
+<script src="/js/arrayInput.js"></script>
+<%- include('footer.ejs'); -%>

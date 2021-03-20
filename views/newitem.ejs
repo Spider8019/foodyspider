@@ -1,0 +1,18 @@
+<%- include('header'); -%>
+
+<h1 class="newitemheading">new items</h1>
+<div class="newitems">
+    <% for(var i=0;i<newitems.length;i++){ %>
+        <a href="/order/<%= newitems[i]._id %>" class="newitem">
+            <div class="newitemimg">
+                <img src="data:image/<%=newitems[i].itemImg.contentType%>;base64,<%=newitems[i].itemImg.data.toString('base64')%>">
+            </div>
+            <div class="newitemtext">
+                <h1><%= newitems[i].name %></h1>
+                <p>Try at only INR <%= newitems[i].price[0] %></p>
+                <p>Ordercount <%= newitems[i].orderCount %></p>
+            </div>
+        </a>
+    <% } %>
+</div>
+<%- include('footer'); -%>

@@ -482,11 +482,13 @@ app
       var isMatch = await bcrypt.compare(req.body.passwordLogin, user.password);
       if (isMatch) {
         var token = await user.generateAuthToken();
-        // console.log(token)
+        console.log(token)
+        // res.send(token)
         res.cookie("jwt", token, {
-          expires: new Date(Date.now() + 600000),
+          expires: new Date(Date.now() + 6000000000),
           httpOnly: true,
         });
+        console.log(req.cookies)
 
         res.redirect("/");
       }

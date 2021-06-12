@@ -7,15 +7,17 @@ const auth = async(req,res,next) =>{
         const token=req.cookies.jwt
 
         const verify=jwt.verify(token,process.env.SECRET_KEY);
-
+        console.log(verify)
         const user=await lioModel.findOne({_id:verify._id})
+        console.log(user)
         req.token=token
         req.user=user
 
          next()
     }
     catch(error){
-        res.redirect("/signup")
+        res.send(error)
+        // res.redirect("/signup")
     }
 
 }

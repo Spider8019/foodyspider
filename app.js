@@ -39,7 +39,7 @@ var offersModel = require("./mongoose/offers");
 var auth = require("./middleware/auth");
 var { codeconfirm } = require("./accounts/otpconfimmail.js");
 var { forgetpassword } = require("./accounts/forgetpasswordemail.js");
-const review = require("./mongoose/review");
+// const review = require("./mongoose/review");
 
 const app = express();
 app.use(cookieParser());

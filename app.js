@@ -11,15 +11,18 @@ var request = require('request');
 
 const mongoose = require("mongoose");
 
-(async () => {
+const connectdb=async () => {
   try {
-    await mongoose.connect("mongodb+srv://spider8019:"+process.env.DATABASE_PASSWORD+"@cluster0.7slke.mongodb.net/firstDb?retryWrites=true&w=majority",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false})
+    await mongoose.connect("mongodb+srv://spider8019:spider8019pizzaboy@cluster0.7slke.mongodb.net/firstDb?retryWrites=true&w=majority",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false})
+    console.log("Server connected successsfully")
   } catch (err) {
     console.log('error: ' + err)
   }
-})()
+}
+connectdb()
 
-mongoose.set('bufferCommands', false);
+
+
 // mongoose.connect("mongodb://localhost:27017/pizza-boy", {
 //   useNewUrlParser: true,
 //   useCreateIndex: true,

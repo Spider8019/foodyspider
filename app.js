@@ -18,6 +18,8 @@ const mongoose = require("mongoose");
     console.log('error: ' + err)
   }
 })()
+
+mongoose.set('bufferCommands', false);
 // mongoose.connect("mongodb://localhost:27017/pizza-boy", {
 //   useNewUrlParser: true,
 //   useCreateIndex: true,

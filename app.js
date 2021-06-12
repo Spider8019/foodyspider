@@ -106,6 +106,7 @@ app.post('/my-api/create-payment/', function(req, res)
 app
   .route("/")
   .get(auth, async (req, res) => {
+    console.log("home page")
     var items = await itemModel.find({});
     var stores=await storeModel.find({ "address": { "$regex": req.user.defaultCity, "$options": "i" } }).populate("itemsId");
     var offers=await offersModel.find({}).populate("itemId","itemImg name");
@@ -478,10 +479,12 @@ app
       var user = await Users.findOne({
         email: req.body.emailLogin,
       });
+      console.log(userName)
       var isMatch = await bcrypt.compare(req.body.passwordLogin, user.password);
-      // console.log(isMatch)
+      console.log(isMatch)
       if (isMatch) {
         var token = await user.generateAuthToken();
+        console.log(token)
         // console.log(token)
         res.cookie("jwt", token, {
           expires: new Date(Date.now() + 600000000),

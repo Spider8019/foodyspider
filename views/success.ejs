@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hooray!! - Spider8019</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div class="successContainer">
+        <div class="successDiv">
+            <h1>Hooray!!</h1>
+            <p>Thanks for placing your order with us!<br/>
+            <span style="color:var(--clr-light);">To know the status of your order. Click on Your Orders button on your profile page</span>
+            </p>
+            <a href="/profile" onclick="(e)=>{conetti.reset()}">Go to profile</a>
+        </div>
+    </div>
+    <script type="module">
+        import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+        var duration = 10 * 1000;
+        var end = Date.now() + duration;
+
+        (function frame() {
+        // launch a few confetti from the left edge
+        confetti({
+            particleCount:2,
+            colors:["#6e0707","#fdfd2a"],
+            startVelocity:100,
+            spread: 100,
+            origin: {
+                x: 0.5,
+                // since they fall down, start a bit higher than random
+                y: 1
+                }
+        });
+        // and launch a few from the right edge
+
+        // keep going until we are out of time
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+        }());
+        setTimeout(function(){ window.location.pathname="/profile" }, 10000);
+    </script>
+</body>
+</html>

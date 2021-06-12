@@ -1,0 +1,85 @@
+<%- include("header"); -%>
+
+<div class="prtStore">
+    <div class="prtStore-header" style="background:linear-gradient(transparent,rgba(0, 0, 0, 0.733)),url('data:image/<%=storeDetails.storeImg.contentType%>;base64,<%=storeDetails.storeImg.data.toString('base64')%>');background-size:contain;background-repeat:repeat;">
+        <!-- <img class="prtStore-img" src="data:image/<%=storeDetails.storeImg.contentType%>;base64,<%=storeDetails.storeImg.data.toString('base64')%>" alt="store images"> -->
+    </div>
+    <div class="prtStore-body">
+        <div>
+            <h1><%= storeDetails.nameOfStore %></h1>
+            <hr/>
+            <hr/>
+            <br/>
+            <b>Menu Items</b>
+            <div class="prtStore-menu">
+                <% for (var i=0;i<storeDetails.itemsId.length;i++){ %>
+                  <a class="prtStore-menuItem" href="/order/<%=storeDetails.itemsId[i]._id %>/<%= storeDetails._id %>">
+                    <img src="data:image/<%=storeDetails.itemsId[i].itemImg.contentType%>;base64,<%=storeDetails.itemsId[i].itemImg.data.toString('base64')%>"/>
+                    <div class="prtStore-text">
+                      <b><%= storeDetails.itemsId[i].name %></b>
+                      <p><%= storeDetails.itemsId[i].description.slice(0,100)+"..." %></p>
+                      <p style="font-size:0.7rem">(Price and Variant)</p>
+                      <div class="prtStorePriceVariantContainer">
+                          <% for(var j=0;j<storeDetails.itemsId[i].price.length;j++){ %>
+                              <div class="prtStorePriceVariant">
+                                <p>₹ <%= storeDetails.itemsId[i].price[j] %></p>
+                                <p><%= storeDetails.itemsId[i].size[j] %></p>
+                             </div>
+                          <% } %>
+                      </div>
+                    </div>
+                </a>
+                <% } %>
+            </div>
+            
+        </div>
+        <div>
+            <p>Rating:</p>
+            <div class="order-items-rating-particular-store">
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+            </div>
+            <p>Address:</p>
+            <b><%= storeDetails.address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %> </b>
+            <p>Bio:</p>
+            <b><%= storeDetails.description %></b>
+            <p>Owner:</p>
+            <b><%= storeDetails.owner %></b>
+            <div style="background:white;margin:1rem 0;border-radius:inherit;padding:1rem;align-items:center;display:flex;justify-content: space-between;">
+                <div>
+                    <p>Opening Time:</p>
+                    <b style="display:inline-block;margin:0.5rem 0;border-radius:0.5rem;background:#39ff14;padding:0.5rem 1rem;color:white;"><%= storeDetails.openingTime %></b>
+                    <p>Closing Time:</p>
+                    <b style="display:inline-block;margin:0.5rem 0;border-radius:0.5rem;background:red;padding:0.5rem 1rem;color:white"><%= storeDetails.closingTime %></b>
+                </div>
+                <canvas id="canvas" width="150" height="150">
+                </canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var stars = document.querySelector(".order-items-rating-particular-store")
+    var array='<%- JSON.stringify(reviewsForThisStore) %>';
+    var array2=JSON.parse(array)
+    var sum=0;
+    for(var i=0;i<array2.length;i++){
+       sum+=array2[i].stars
+    }
+    var xExact= Math.floor(sum/(array2.length*20))
+    var y=((sum/(array2.length*20))-xExact)
+    if(y>=0.5)
+            {stars.children[xExact].classList.remove("far","fa-star")
+            stars.children[xExact].classList.add("fas","fa-star-half-alt")}
+    for(var i=0;i<xExact;i++)
+    {
+        stars.children[i].classList.remove("far")
+        stars.children[i].classList.add("fas")
+    }
+
+</script>
+<script src="/js/analogclock.js"></script>
+<%- include("footer"); -%>

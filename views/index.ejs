@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src='https://kit.fontawesome.com/a076d05399.js'></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
     <title>Pizza Boys SPIDER8019</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -18,11 +19,26 @@
         <div class="navbtn nav1"></div>
         <div class="navbtn nav2"></div>
         <div class="navbtn nav3"></div>
-        <div class="navbtn nav4"></div>
+        <div class="navbtn nav4">
+            <div style="color:#fdfd2a;position:Absolute;top:50%;left:50%;padding:2rem;width:25%;overflow-y:auto;max-height:80%">
+            <h2 style="margin-bottom:1rem;">Select Your Default City</h2>
+            <form action="/changeDefaultCity" method="POST">
+            <% for(var i=0;i<cities.length;i++) { %>
+              <div style="display:flex;align-items:center;padding:0.5rem;">
+                  <input  type="radio" name="defaultCity" value="<%= cities[i] %>"/>
+                  <label style="padding-left:0.5rem;"><%= cities[i] %></label>
+              </div>
+            <% } %>
+            <i  style="cursor:pointer;background:transparent;border:none;margin-top:1rem;padding:0.5rem;border:1px solid #fdfd2a;color:#fdfd2a;border-radius:0.3rem;" onclick="closeDefaultCity()" class="fas fa-times"></i>
+            <input  style="cursor:pointer;background:transparent;border:none;margin-top:1rem;padding:0.5rem;border:1px solid #fdfd2a;color:#fdfd2a;border-radius:0.3rem;" type="Submit" value="Change City"/>
+            </form>
+            </div>
+        </div>
         <div class="navbtn nav5"></div>
         <div class="indexUser">
             <p>Hey, <%=user.name %></p>
             <div class="userDropdown">
+                <a style="cursor:pointer" onclick="showSelectDefault()"><i class="fas fa-map-signs"></i> <span id="defaultCity"><%= user.defaultCity %></span> (Change)</a>
                 <a href="wishlist/<%= user._id%>"><i class="fas fa-shopping-cart"></i> Your Wish List</a>
                 <a href="/profile"><i class="far fa-user-circle"></i> Your Account</a>
                 <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout from all devices</a>
@@ -32,8 +48,46 @@
             <p>Lorem ipsum dolor sit amet.</p>
             <h1>PIZZA BOYS</h1>
         </div>
+ 
     </section>
-  
+
+<section class="offers">
+    <% for(var i=0;i<offers.length;i++){ %>
+        <a href="https://www.google.com" class="offer">
+            <div class="offerimages">
+                <% for(var j=0;j<offers[i].itemId.length;j++){ %>
+                    <!-- <img src="https://www.imagediamond.com/blog/wp-content/uploads/2019/11/attratve-Boy-DP3.jpg"/> -->
+                    <img src="https://www.imagediamond.com/blog/wp-content/uploads/2019/09/amrit_maan-16.jpg"/>
+
+                    <img src="data:image/<%=offers[i].itemId[j].itemImg.contentType%>;base64,<%=offers[i].itemId[j].itemImg.data.toString('base64')%>" />
+                <% } %>
+                
+            </div> 
+            <div class="offerInfo">
+              <div class="offerFirstPart">
+                <h1>
+                <%= offers[i].title %>
+                </h1>
+              </div>
+            </div>
+            <div class="offerSecondaryPart">
+                <div>
+                    <p><%= offers[i].totalAmount %></p>
+                    <p style="font-size:0.8rem;font-weight:300;">Order Containes</p>
+                    <% for(var j=0;j<offers[i].itemId.length;j++){ %>
+                        <span><%= offers[i].itemId[j].name %></span>
+                    <% } %>
+                    <div>
+                        <span style="line-height:0;font-size:0.8rem;">*T&C are applied</span>
+                        <p><%= offers[i].description %></p>
+                        <p><%= offers[i].validUpto %></p>
+                    </div>   
+                </div>
+            </div>
+        </a>
+    <% } %>
+  </section>
+
     <!-- delicious burger section with order now button -->
 
     <section class="del">
@@ -62,9 +116,11 @@
         <i class="fas fa-ice-cream"></i>
         <i class="fas fa-hamburger"></i>
         <i class="fas fa-cheese"></i>
-        <form action="/" method="POST">
-            <input type="text" name="Item" placeholder="Search by Item name">
-            <input type="submit">
+        <form action="/search" method="GET">
+            <input type="text" name="item" placeholder="Search by Item name"/>
+            <input type="text" name="location" value="<%= user.defaultCity %>" style="display:none;"/>
+
+            <input type="submit" value="Search"/>
         </form>
         <i class="fas fa-hotdog"></i>
         <i class="fas fa-pizza-slice"></i>
@@ -117,6 +173,23 @@
         </div>
     </section>
 
+    <section class="stores-corner">
+        <h1>⚞ OUR STORES ⚟</h1>
+        <p>This is all your support to make us capable to build 18 frenchise in gujarat state.</p>
+        <div class="stores-home">
+            <% for(var i=0;i<stores.length;i++){ %>
+               <a href="/franchise/<%= stores[i]._id %>" target="_blank" class="store-home">
+                 <img class="store-home-img" src="data:image/<%=stores[i].storeImg.contentType%>;base64,<%=stores[i].storeImg.data.toString('base64')%>" alt="our store"/>
+                 <div class="store-text">
+                    <b><%= stores[i].nameOfStore %></b>
+                    <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>
+                 </div>
+                </a>
+            <% } %>
+        </div>
+    </section> 
+
+
     <section class="pizza-corner">
         <h1>⚞ PIZZZZZZZAAAA CORNER ⚟</h1>
         <p>
@@ -126,30 +199,35 @@
             fuga repellat ipsa!
         </p>
         <div class="pizzas">
-            <% for(var i=0;i<result.length;i++){ %>
+            <% for(var i=0;i<stores.length;i++ ){
+            for(var j=0;j<stores[i].itemsId.length;j++){
+            if(i*(j+1)>=5)
+                break;   
+            else{
+            %>
             <div class="pizza">
-                    <img src="data:image/<%=result[i].itemImg.contentType%>;base64,<%=result[i].itemImg.data.toString('base64')%>">
+                    <img src="data:image/<%=stores[i].itemsId[j].itemImg.contentType%>;base64,<%=stores[i].itemsId[j].itemImg.data.toString('base64')%>">
                 <div class="pizza-order">
                     <h2>
-                        ₹ <%= result[i].price[0] %><span style="font-size: 1rem">-/-<br /></span>
+                        ₹ <%= stores[i].itemsId[j].price[0] %><span style="font-size: 1rem">-/-<br /></span>
                     </h2>
-                    <p><%= result[i].name %></p>
-                    <a href=<%= "order/"+ result[i]._id %>>order now</a>
+                    <p><%= stores[i].itemsId[j].name %></p>
+                    <a href= <%= "order/"+ stores[i].itemsId[j]._id +"/"+ stores[i]._id %>>order now</a>
                     <div class="pizza-icons">
                         <div class="pizza-icon">
                         <i class="fas fa-star"></i>
-                        <span><%=  avgRatings[i].stars %> <br>(Reviews: <%= avgRatings[i].reviewCount %>) </span>
+                        <span><%=  avgRatings[j].stars %> <br>(Reviews: <%= avgRatings[j].reviewCount %>) </span>
                         </div>
                         <div class="pizza-icon">
                         <i class="fas fa-truck"></i>
                         <span>
-                            <%= result[i].orderCount %>
+                            <%= stores[i].itemsId[j].orderCount %>
                         </span>
                        </div>
                     </div>
                 </div>
             </div>
-           <% } %>
+           <% }}} %>
         </div>
           
     </section>
@@ -168,6 +246,21 @@
             width="100%" height="550" frameborder="0" style="border: 0" allowfullscreen="" aria-hidden="false"
             tabindex="0"></iframe>
     </section>
-
-    
+    <script>
+    var navbtns=document.querySelectorAll(".navbtn")
+     function closeDefaultCity(){
+        for(var i=0;i<3;i++)
+         {
+             navbtns[i].style.left="0%"
+             navbtns[i].style.top="0%"
+         }
+     }
+     function showSelectDefault(){
+         for(var i=0;i<3;i++)
+         {
+             navbtns[i].style.left="100%"
+             navbtns[i].style.top="100%"
+         }
+     }
+    </script>
     <%- include('footer'); -%>

@@ -1,14 +1,21 @@
 var mongoose=require("mongoose")
+const Stores= require("./stores")
+const Users=require("./lioModel")
 
 var placeOrderSchema=new mongoose.Schema({
     reciever:{
         type:String
     },
-    loginUser:{
-        type:String
+    loginUserId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:Users,
     },
     fulladdress:{
         type:String
+    },
+    storeId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:Stores
     },
     email:{
         type:String
@@ -16,12 +23,16 @@ var placeOrderSchema=new mongoose.Schema({
     contact:{
         type:Number
     },
-    item:{
-        type:String
+    paymentMethod:{
+        type:String,
+        required:true,
     },
-    quantity:{
+    item:[{
         type:String
-    },
+    }],
+    quantity:[{
+        type:String
+    }],
     delivered:{
        type:Number,
        default:-1
@@ -29,7 +40,8 @@ var placeOrderSchema=new mongoose.Schema({
     date:{
         type:Date,
         default:new Date()
-    }
+    },
+
 })
 // -1 meaning it is accepted by store
 // 0 means delivered from store

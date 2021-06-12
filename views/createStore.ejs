@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create store</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        form{
+            margin:2rem auto;
+            width:fit-content;
+            width:60vw;
+            border:1px solid grey;
+            padding:2rem;
+            border-radius:0.3rem;
+        }
+        input[type="text"],input[type="time"],select,textarea,fieldset{
+            margin:0.5rem 0;
+            width:100%;
+            border:1px solid grey;
+            border-radius: inherit;
+            padding:0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create store -- spider8019</h1>
+    <div class="createStoreContainer">
+        <form method="POST" action="/admincreatestore" enctype="multipart/form-data">
+
+            <input type="text" name="name" placeholder="Enter store name" />
+            <input type="text" name="password" placeholder="Enter password" />
+            <fieldset style="padding:1rem">
+                <legend>Address of store</legend>
+                <input type="text" name="straddress" placeholder="Address" />
+                <input type="text" name="strzone" placeholder="Zone" />
+                <input type="text" name="strcity" placeholder="City" />
+                <input type="text" name="strpincode" placeholder="PINCODE" />
+                <input type="text" name="strstate" placeholder="State" />
+            </fieldset>
+            <fieldset style="padding:1rem">
+                <legend>Basic Info</legend>
+                Opening Time
+                <input style="width:100%" type="time" name="openingTime"/>
+                Closing Time
+                <input style="width:100%" type="time" name="closingTime"/>
+                <select style="width:100%" name="daysInAWeek">
+                    <option value="7">7days</option>
+                    <option value="6">6days</option>
+                    <option value="5">5days</option>
+                    <option value="4">4days</option>
+                    <option value="3">3days</option>
+                    <option value="2">2days</option>
+                    <option value="1">1days</option>
+                </select>
+            </fieldset>
+            <input type="text" name="paymentInfo" placeholder="Payment Info" />
+            <input type="text" name="owner" placeholder="Franchise Owner" />
+            <textarea type="text" name="description" placeholder="Description" ></textarea>
+            <input type="file" name="storeImg" accept="image/*"/>
+            <input type="text" name="itemsId" placeholder="Store Items Id seperated by id" />
+            <input type="Submit" value="Create Store"/>
+        </form>
+    </div>
+</body>
+</html>

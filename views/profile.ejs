@@ -4,7 +4,7 @@
         <h1><%= user.name %></h1>
         <i><%= user.email %></i>
     </div>
-    <button onclick="showReceiptForm()">View Receipts</button>
+    <button onclick="showReceiptForm()">Previous Orders</button>
 </div>
 
 
@@ -13,7 +13,8 @@
         <p>Thanks for <br>shopping with us... </p>
     </div>
     <div class="yourpurchases">
-    <% purchase.forEach((item)=>{ %>
+    <% purchase.forEach((item,index)=>{ %>
+        <div class="yourPurchaseContainer">
         <div class="yourpurchase">
             <p>
                 <%= item.name %>
@@ -23,7 +24,6 @@
                 <div class="purchaseItemDropdown">
                     <a href=<%= "/order/"+ item._id %>>Order Again</a>
                     <button onclick="showReviewForm(this)">Give Review</button>
-
                 </div>
             </div>
             <div class="yourpurchaseImg">
@@ -34,17 +34,18 @@
                 <div class="your-review">
                     <form class="your-review-form" action="/review" method="POST">
                         <h1>Your review matters</h1>
-                        <input type="text" name="itemid"     value="<%= item._id %>" style="display:none">
-                        <input type="text" name="userid" value="<%= user._id %>" style="display:none;">
-                        <input type="range" name="stars" min='0' max='100' required>
+                        <input type="text" name="itemid" value="<%= item._id %>" style="display:none"/>
+                        <input type="text" name="storeId" value="<%= user.purchase[index].storeId %>" style="display:none"/>
+                        <input type="text" name="userid" value="<%= user._id %>" style="display:none;"/>
+                        <input type="range" name="stars" min='0' max='100' required/>
                         <input type="text" name="review" maxlength="200" placeholder="Your Review matters for us !!!" required />
-                        <input type="submit">
+                        <input type="submit"/>
                     </form>
                 </div>
             </div>
             <div class="receiptContainer">
                 <button onclick="hideReviewForm(this)">+</button>
-                <h1>Your Reciepts</h1>
+                <h1>Your Previous Orders</h1>
                 <div class="receiptDiv">
                    
                    <% for(var i=0;i<yourOrder.length;i++){ %>
@@ -89,7 +90,8 @@
                 </div>
             </div>
         </div>
-
+        <p style="font-size:0.8rem;height:1rem;overflow:hidden;text-overflow:ellipsis;">Ordered <b><%= user.purchase[index].purchaseCount %></b> times from <b><%= stores[index].nameOfStore %></b></p>
+    </div>
     <% }) %>
 </div>
 </div>

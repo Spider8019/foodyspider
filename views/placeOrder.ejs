@@ -4,17 +4,17 @@
 <h1 class='placeOrderHeading'>Delivery Location</h1>
 <!-- <p class="placeOrderContent">Your Order Total is 8019</p> -->
 <div class="align-horizontal-center">
-<form class="placeOrderForm" action="/getdeliveryinfo" method="POST">
+<div class="placeOrderForm">
     <input type="text" name="reciever" value="<%= username %>"placeholder="Deleiver to" required>
     <input type="email" name="email" value="<%= usermail %>"placeholder="Reviever's mail id" required>
     <select  name="city" class="city" onchange='setCity(this.value)' required>
     </select>    
-    <input type="text" name="landmark" placeholder="Landmark" required>
-    <input type="text" name="colony" placeholder="Colony" style="width:30%;" required>
-    <select name="zone" style="width:30%;" class="zone" required>
+    <input type="text" name="landmark" value="landmark" placeholder="Landmark" required>
+    <input type="text" name="colony" value="modal colony" placeholder="Colony" style="width:30%;" required>
+    <select name="zone" style="width:30%;" value="default zone" class="zone" required>
     </select>
-    <input type="text" name="flat" id="" placeholder="Flat Number/Street" style="width:30%;" required>
-    <input type="text" name="contactnumber" minlength="10" maxlength="10" placeholder="Contact Number" style="width:30%;" required>
+    <input type="text" name="flat" id="" placeholder="Flat Number/Street" value="default stret" style="width:30%;" required>
+    <input type="text" name="contactnumber" minlength="10" maxlength="10" value="1111111111" placeholder="Contact Number" style="width:30%;" required>
     <div class="paymentOptions">
         <label class="radioOuterContainer">Cards
             <input name="paymentMethod" type="radio" checked="true" value="card">
@@ -22,31 +22,32 @@
                 <span class="radioSpan"><i class="far fa-credit-card"></i></span>
             </span>
         </label>
-        <label class="radioOuterContainer">Cash On Delivery
+        <!-- <label class="radioOuterContainer">Cash On Delivery
             <input name="paymentMethod" type="radio" checked="true" value="cod">
             <span class="radioInnerContainer">
                 <span class="radioSpan"><i class="fas fa-wallet"></i></span>
             </span>
-        </label>
+        </label> -->
     </div>
-    <input type="text" name="item" id="itemsid" style="display:none">
+    <input type="text" name="item" id="itemsid" style="display:none" >
     <input type="text" name="quantities" value="<%= quantities %>" style="display:none">
-    <input type="submit" value="proceed to payment">
-</form>
+    <button id="checkout-button" class="paypal-custom-css"></button>
+    <input type="text" value="<%= storeId %>" name="storeId" style="display:none"/>
+</div>
 </div>
 <div class="align-horizontal-center">
 <div class="placeOrderIQ">
 
     <% for(var j=0;j<items.length;j++){ %>
-     <div>
+     <div class="placeorderDescription">
         <p>
             <b>Order Name: </b><%= items[j].name %>
         </p>
-
+        <p><b>From:</b> <%= stores[j].nameOfStore %></p>
         <p>
         <b>Order Description: </b>
         <% for(var i=0;i<quantities.split(".")[j].split("$").length-1;i++){ %>
-            <%= quantities.split(".")[j].split('$')[i] %>(<%= items[j].size[i] %>)
+            <%= quantities.split(".")[j].split("$")[i] +"("+items[j].size[i] +")"%>
         <% } %> 
         </p>
     </div>
@@ -54,13 +55,48 @@
 </div>
 </div>
 
+
+
+<div id="paypal-button"></div>
+
 <script>
-    var itemsName=[]
-    var items=<%- JSON.stringify(items) %>
-    for(var i=0;i<items.length;i++)
-    {
-        itemsName.push(items[i].name)
+  paypal.Button.render({
+    env: 'sandbox', // Or 'production'
+    // Set up the payment:
+    // 1. Add a payment callback
+    payment: function(data, actions) {
+      // 2. Make a request to your server
+      return actions.request.post('/my-api/create-payment/')
+        .then(function(res) {
+          // 3. Return res.id from the response
+          return res.id;
+        });
+    },
+    // Execute the payment:
+    // 1. Add an onAuthorize callback
+    onAuthorize: function(data, actions) {
+      // 2. Make a request to your server
+      return actions.request.post('/my-api/execute-payment/', {
+        paymentID: data.paymentID,
+        payerID:   data.payerID
+      })
+        .then(function(res) {
+        //   3. Show the buyer a confirmation message.
+        console.log(res)
+        });
     }
+  }, '#checkout-button');
+</script>
+
+<script>
+    var itemsName=""
+    var items=<%- JSON.stringify(items) %>
+    console.log(items)
+    for(var i=0;i<items.length;i++)
+    {console.log(items[i])
+        itemsName+=items[i].name+"."
+    }
+    console.log(itemsName)
     document.getElementById("itemsid").value=itemsName
 </script>
 <script>
@@ -105,4 +141,5 @@
         }
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <%-  include('footer'); -%>

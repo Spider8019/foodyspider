@@ -1,25 +1,49 @@
 <%- include('header') -%>
 
-<h1 class="availableHeading">available items</h1>
-
-<i class="availableNote">*Select Item by clicking on item Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, animi. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae, deserunt?Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil autem corrupti labore! Impedit adipisci cum vitae natus est quae nemo.</i>
-
+<div class="available-search-form-container">
+    <div id="search-navigation-bar-heading" style="width:20vw;">
+     <!-- <h1 style="text-align:left;margin:0;" class="availableHeading">available items</h1> -->
+     <b style="color:#bbb;font-size:0.8rem;">Stores found <%= availableItems.length %></b>
+     <p style="font-size:0.8rem;">Results are shown on behalf of your default city for first time</p>
+    </div>
+    <form action="/search" method="GET">
+        <input type="search" name="location" value="<%= searchedLocation %>" placeholder="Location"/>
+        <input style="background:rgb(253,253,43,0.5)" type="search" name="item" value="<%= searchedQuery %>" placeholder="Query"/>
+        <input type="submit" value="Search"/>
+    </form>
+</div>
+<!-- <i class="availableNote"></i> -->
 <div class="available-items">
-    <% availableItems.forEach((item)=>{ %>
-        <a href="<%= 'order/'+ item._id %>"><div class="available-item">
+    <% if(availableItems.length>0){
+       for(var i=0;i<availableItems.length;i++){
+       availableItems[i].itemsId.forEach((item)=>{ %>
+        <a href="<%= 'order/'+ item._id + '/' + availableItems[i]._id %>"><div class="available-item">
             <p class="availableItemPrice">INR <%= item.price.sort()[0] %></p>
             <div class="available-item-text">
-                <h1><%= item.name %></h1>
-                <p class="totalOrderCount"><%= item.orderCount %>+ orders</p>
-                <p><%= item.description.slice(0,30) %></p>
+                <h2><%= item.name %></h2>
+                <b><%= availableItems[i].nameOfStore.slice(0,30) %></b>
+                <p style="font-size:0.8rem;"><%= availableItems[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%"," ") %></p>
             </div>
             <div class="available-item-img">
                <img src="data:image/<%=item.itemImg.contentType%>;base64,<%=item.itemImg.data.toString('base64')%>">
             </div>
         </div>
         </a>
-    <% }) %>
+    <% })}} %>
 </div>
 
 <script src="/order-calc.js"></script>
+<script>
+    window.onscroll = function() {
+        // console.log(windowScrollPos)
+    var currentScrollPos = window.pageYOffset;
+      if (currentScrollPos > 80) {
+        document.querySelector(".available-search-form-container").style.padding = "0rem";
+        document.querySelector("#search-navigation-bar-heading").style.transform="scale(0.8)";
+      } else {
+        document.querySelector("#search-navigation-bar-heading").style.transform="scale(1)";
+        document.querySelector(".available-search-form-container").style.padding = "1rem";      }
+    }
+ </script>
+    
 <%- include('footer') -%>

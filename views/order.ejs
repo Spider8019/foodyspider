@@ -11,7 +11,8 @@
                 <i class="far fa-star"></i>
                 <i class="far fa-star"></i>
             </div>
-            <h5>*estimated delivery in 30 minutes from order</h5>
+            <h5>Your order will pick by  <%= store.nameOfStore %></h5>
+            <h6><%= store.address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%"," ") %></h6>
         </div>
 
         <div class="item-image">
@@ -47,6 +48,7 @@
                 
                     <input type="text" value="<%= result._id %>" name="id">
                     <input type="text" value="" name="quantities">
+                    <input type="text" value="<%= store._id %>" name="storeId"/>
                     <input type="submit" class="del-content-submit-button" value="add to cart">
                 </form>
                 <!-- <a href="" class="del-content" id="addToCart">Add to cart</a> -->
@@ -54,6 +56,7 @@
                 <form action="/placeorder" method="POST" class="placeorderformorder">   
                     <input type="text" value="<%= result._id %>" name="id">
                     <input type="text" value="" name="quantities">
+                    <input type="text" value="<%= store._id %>" name="storeId" /> 
                     <input type="submit"class="del-content-submit-button"value="place Your Order">
                 </form>
             </div>
@@ -69,24 +72,59 @@
         </div>
     </div>
     <div class="order-reivew">
-        <h1>Reveiws</h1>
+        <h1> <%= totalReviews %> Reveiws</h1>
+        <div id="reviews">
         <% for(var i=0;i<reviews.length;i++){ %>
            <div class="orderreview">
             <div class="ratingBar">
                <p style="width:<%= reviews[i].stars%>%"></p>
             </div>
             <div class="review-full-order">
-            <h3></i>  <%=reviewUserNames[i].name %> <i class="fas fa-angle-double-right"></i><br><p style="font-weight:400"><%= reviews[i].date.slice(0,15) %> </i></p></h3>
-            <p>
-                <%= reviews[i].review%>
-            </p>
+                <h3></i>  <%=reviewUserNames[i].name %> <i class="fas fa-angle-double-right"></i><br><p style="font-weight:400"><%= reviews[i].date.slice(0,15) %> </i></p></h3>
+                <p>
+                    <%= reviews[i].review%>
+                </p>
             </div>
            </div>
+        <% } %>
+        </div>
+        <% if( totalReviews > 2){ %>
+        <button id="moreReviews" data-skip="2" data-limit="2">show more</button>
         <% } %>
     </div>
 </section>
 
 <script>
+// for getting more reviews 
+$(document).ready(function () {
+    var orderid= "<%= result._id %>"
+    var totalReviews= "<%= totalReviews %>"
+    $("#moreReviews").click(function () {
+        const skip=$("#moreReviews").attr("data-skip")
+        const limit=$("#moreReviews").attr("data-limit")
+        // console.log($("#moreReviews").attr("data-skip"))
+        $.ajax({
+            url: `/reviews/${orderid}/${skip}/${limit}`,
+            type: 'get',
+            // dataType: "",
+            success: function (data) {
+                   data.reviews.forEach((review,index)=>{
+                     $("#reviews").append(`<div class="orderreview"><div class="ratingBar"><p style="width: ${review.stars+"%"}"></p></div><div class="review-full-order"><h3></i> ${data.reviewUserNames[index].name} <i class="fas fa-angle-double-right"></i><br><p style="font-weight:400">${review.date.slice(0,15)} </i></p></h3><p>${review.review}</p></div></div>`);
+                   })
+                   $("#moreReviews").attr("data-skip",Number(skip)+2)
+                   if(skip>=totalReviews-2)
+                    $("#moreReviews").css("display","none")
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ' + error.message);
+            },
+        });
+    })
+});
+
+
+
+
 var x=0;
 var stars = document.querySelector(".order-items-rating")
 var reviews=<%- JSON.stringify(reviews) %>
@@ -104,6 +142,6 @@ for(var i=0;i<xExact;i++)
     stars.children[i].classList.add("fas")
 }
 </script>
-<script src="../js/order-calc.js"></script>
+<script src="/js/order-calc.js"></script>
 
 <%- include('footer'); -%>

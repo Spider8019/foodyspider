@@ -6,9 +6,9 @@ sgMail.setApiKey(sendingmailApiKey)
 const codeconfirm=(email,code)=>{
     sgMail.send({
     to: email, // Change to your recipient
-    from: '2019uee0115@iitjammu.ac.in', // Change to your verified sender
+    from: 'xaman@lenzgig.com', // Change to your verified sender
     subject: 'Code confirmation for finaly delivery',
-    html: `<strong>Your Code<br></strong><h1>${code}</h1><p>Thanks for shopping with us on <a href="https://foodspider.herokuapp.com">Pizza Boys</a></p>`,
+    html: `<strong>Your Code<br></strong><h1>${code}</h1><p>Thanks for shopping with us on <a href="http://localhost:3000">Pizza Boys</a></p>`,
     })
 }
 

@@ -1,6 +1,8 @@
 var mongoose=require("mongoose")
 var bcrypt=require("bcryptjs")
 var jwt=require("jsonwebtoken")
+const Items=require("./itemModel")
+const Stores=require("./stores")
 
 const loginoutSchema=new mongoose.Schema({
     name:{type:String,
@@ -10,6 +12,13 @@ const loginoutSchema=new mongoose.Schema({
             required:true,
             unique:true
         },
+    defaultCity:{
+        type:String,
+        default:"Ayodhya"
+    },
+    defaultAddress:[{
+        type:String,
+    }],
     password:{
         type:String,
         required:true
@@ -22,11 +31,17 @@ const loginoutSchema=new mongoose.Schema({
     }],
     addToCart:[{
         item:{
-            type:String,
-            required:true
+            type:mongoose.Schema.Types.ObjectId,
+            ref:Items,
+            required:true,
         },
         quantity:{
             type:String,
+            required:true
+        },
+        storeId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:Stores,
             required:true
         }
     }],
@@ -38,6 +53,11 @@ const loginoutSchema=new mongoose.Schema({
         purchaseCount:{
             type:Number,
             default:0
+        },
+        storeId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:Stores,
+            required:true
         }
     }]
 })

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Offer</title>
+    <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+    <h1>Create Offer on Admin Side</h1>
+    <form action="/adminoffer" method="POST">
+      <input type="text" name="title" placeholder="Title"/>
+      <textarea name="description" placeholder="Description of word" maxlength="100"></textarea>
+      <input type="date" name="validUpto" />
+      <input type="text" name="validFor" placeholder="stores id seperated by comma"/>
+      <input type="text" name="itemId" placeholder="items id seperated by comma"/>
+      <input type="text" name="quantity" placeholder="number of items of each seperated by comma"/>
+      <input type="number" name="totalAmount" min="300" placeholder="price you waana on offer"/>
+      <input type="submit" value="Create Offer"/>
+    </form>
+</body>
+</html>

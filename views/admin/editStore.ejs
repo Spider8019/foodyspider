@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Store - Spider8019</title>
+    <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+    <h1>Edit <%= storeDetails.name %> store</h1>
+    <form method="POST" action="/franchise/editStore/<%= storeDetails._id %>">
+        <div>
+            Store Name: <input type="text" value="<%= storeDetails.nameOfStore %>" name="name" placeholder="Enter store name"/>
+        </div>
+        <fieldset>
+            <legend>Address Related Query</legend>
+
+            <input type="text" value="<%= storeDetails.address.split(`%`)[0] %>" name="address" placeholder="Store Address"/>
+            <input type="text" value="<%= storeDetails.address.split(`%`)[1] %>" name="zone" placeholder="zone"/>
+            <input type="text" value="<%= storeDetails.address.split(`%`)[2] %>" name="city" placeholder="city"/>  
+            <input type="text" value="<%= storeDetails.address.split(`%`)[3] %>" name="pincode" placeholder="pincode"/>     
+            <input type="text" value="<%= storeDetails.address.split(`%`)[4] %>" name="state" placeholder="State"/>
+        </feildset>
+        <div>
+            Store Owner: <input type="text" value="<%= storeDetails.owner %>" name="owner" placeholder="Store Owner"/>
+        </div>
+        <div>
+            Store Description: <input type="text" value="<%= storeDetails.description %>" name="description" placeholder="Description"/>
+        </div>
+        <h5>Here you can add items or remove</h5>
+        <div class="editItemsList">
+            <% for(var i=0;i<items.length;i++){ %>
+            <div class="checkboxContainer">
+                <input class="checkBox" type="checkbox" name="itemsId" value="<%= items[i]._id %>" name="addItems"/> 
+                <label><%= items[i].name %></label>
+            </div>
+            <% } %>
+        </div>
+        <input type="submit" value="Update Store"/>  
+      </form>
+    <hr/>
+    <!-- <p><%= items %></p> -->
+<script>
+    var x= <%- JSON.stringify( storeDetails.itemsId )%>;
+    var checkedItems=[]
+    for(var i=0;i<x.length;i++){
+        checkedItems.push(x[i]._id);
+    }
+    var cb=document.querySelectorAll(".checkBox");
+    for(var i=0;i<cb.length;i++){
+        if(checkedItems.indexOf(cb[i].value)>=0)
+         cb[i].checked=true;
+    }
+</script>
+</body>
+</html>

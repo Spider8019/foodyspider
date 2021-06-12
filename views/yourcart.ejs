@@ -11,6 +11,7 @@
                 </div>
                 <div class="cartItemText">
                     <h1><%= items[i].name %></h1>
+                    <b><%= items[i].nameOfStore %></b>
                     <h3>Quantities: <%= userAccount.addToCart[i].quantity.split("$") %>
                     <br>Sizes: <%= items[i].size %></h3>
                     <p>INR <%= returnTotalForCartItem(userAccount.addToCart[i].quantity.split("$"),items[i].price) %></p>
@@ -18,7 +19,7 @@
                 <div class="cartItemControls">
                     <a href="/removefromcart/<%= userAccount.addToCart[i]._id%>/userid/<%= userAccount._id %>">Remove</a>
 
-                    <a href="/getdeliveryinfo/itemid/<%=userAccount.addToCart[i].item+'.'%>/quantity/<%=userAccount.addToCart[i].quantity+'.'%>">Purchase</a>
+                    <a href="/getdeliveryinfo/itemid/<%=userAccount.addToCart[i].item%>./store/<%= items[i].storeId %>./quantity/<%=userAccount.addToCart[i].quantity+'.'%>">Purchase</a>
                 </div>
             </div>
         <% }} 
@@ -37,11 +38,13 @@
     //  console.log(userAccountATC)
     var itemids=""   
     var itemquan=""
+    var store=""
     userAccountATC.forEach((item)=>{
          itemids+= item.item + "."
           itemquan += item.quantity+"."
+          store+=item.storeId+"."
     })
-    var purchaseAllLink="/getdeliveryinfo/itemid/"+itemids+"/quantity/"+itemquan;
+    var purchaseAllLink="/getdeliveryinfo/itemid/"+itemids+"/store/"+store+"/quantity/"+itemquan;
     document.getElementById("purchaseAll").href=purchaseAllLink
 </script>
 <%

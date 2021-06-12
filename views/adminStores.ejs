@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Stores</title>
+    <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+    <h1>Get all Your Franchise Store</h1>
+    <div class="stores">
+    <% for(var i=0;i<stores.length;i++){ %>
+        <div class="store">
+            <img class="storeImg"  src="data:image/<%=stores[i].storeImg.contentType%>;base64,<%=stores[i].storeImg.data.toString('base64')%>" alt="store image"/>
+            <div class="storeBasic">
+                <b><%= stores[i].nameOfStore%></b>
+                <p><%= stores[i].owner %></p>
+                <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>    
+                <p class="unrevealonHover"><%= stores[i].paymentInfo %></p>
+                <p><%= stores[i].description.slice(0,100) %></p>
+                <button>Expire the license</button>
+                <a href="/franchise/editStore/<%= stores[i]._id %>">Edit Store</a>
+            </div>
+            <div class="itemsinstore">
+                <b>Items in Menu</b>
+                <p><%= stores[i].itemsId %></p>
+            </div>
+        </div>
+    <% } %>
+   </div>
+</body>
+</html>

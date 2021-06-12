@@ -10,8 +10,14 @@ var multer = require("multer");
 var request = require('request');
 
 const mongoose = require("mongoose");
-mongoose.connect("mongodb+srv://spider8019:"+process.env.DATABASE_PASSWORD+"@cluster0.7slke.mongodb.net/firstDb?retryWrites=true&w=majority",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true})
 
+(async () => {
+  try {
+    await mongoose.connect("mongodb+srv://spider8019:"+process.env.DATABASE_PASSWORD+"@cluster0.7slke.mongodb.net/firstDb?retryWrites=true&w=majority",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false})
+  } catch (err) {
+    console.log('error: ' + err)
+  }
+})()
 // mongoose.connect("mongodb://localhost:27017/pizza-boy", {
 //   useNewUrlParser: true,
 //   useCreateIndex: true,

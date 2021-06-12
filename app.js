@@ -479,12 +479,9 @@ app
       var user = await Users.findOne({
         email: req.body.emailLogin,
       });
-      console.log(userName)
       var isMatch = await bcrypt.compare(req.body.passwordLogin, user.password);
-      console.log(isMatch)
       if (isMatch) {
         var token = await user.generateAuthToken();
-        console.log(token)
         // console.log(token)
         res.cookie("jwt", token, {
           expires: new Date(Date.now() + 600000000),

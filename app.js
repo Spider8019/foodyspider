@@ -484,7 +484,7 @@ app
         var token = await user.generateAuthToken();
         // console.log(token)
         res.cookie("jwt", token, {
-          expires: new Date(Date.now() + 600000000),
+          expires: new Date(Date.now() + 600000),
           httpOnly: true,
         });
 

@@ -23,12 +23,6 @@ connectdb()
 
 
 
-// mongoose.connect("mongodb://localhost:27017/pizza-boy", {
-//   useNewUrlParser: true,
-//   useCreateIndex: true,
-//   useUnifiedTopology: true,
-// });
-
 const cities=require("./public/js/cityarray")
 var itemModel = require("./mongoose/itemModel");
 var Users = require("./mongoose/lioModel");

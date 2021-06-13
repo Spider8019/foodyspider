@@ -16,8 +16,8 @@ const auth = async(req,res,next) =>{
          next()
     }
     catch(error){
-        res.send(error)
-        // res.redirect("/signup")
+        // res.send(error)
+        res.redirect("/signup")
     }
 
 }

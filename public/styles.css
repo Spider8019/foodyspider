@@ -2160,3 +2160,22 @@ width:100%;
 .orderSuccessModal>p{
   text-align:Center;
 }
+.placeordersda{
+  margin:0.5rem;
+  padding:0.5rem;
+  height:5rem;
+  background:white;
+  border-radius:inherit;
+  text-align:Center;
+  width:fit-content;
+  cursor:pointer;
+}
+.activeplaceordersda{
+  box-shadow:2px 2px 10px rgba(0, 0, 0, 0.473);
+  border:1px dotted var(--clr-dark);
+}
+.paymentoptions{
+ display:flex;
+ justify-content:center;
+ margin:1rem 0;
+}

@@ -9,12 +9,12 @@
     <input type="email" id="email" name="email" value="<%= usermail %>"placeholder="Reviever's mail id" required>
     <select  name="city" id="city" class="city" onchange='setCity(this.value)' required>
     </select>    
-    <input type="text" id="landmark" name="landmark" value="landmark" placeholder="Landmark" required>
-    <input type="text" id="colony" name="colony" value="modal colony" placeholder="Colony" style="width:30%;" required>
-    <select name="zone" id="zone" style="width:30%;" value="default zone" class="zone" required>
+    <input type="text" id="landmark" name="landmark"  placeholder="Landmark" required>
+    <input type="text" id="colony" name="colony"  placeholder="Colony" style="width:30%;" required>
+    <select name="zone" id="zone" style="width:30%;"  class="zone" required>
     </select>
-    <input type="text" id="flat" name="flat" id="" placeholder="Flat Number/Street" value="default stret" style="width:30%;" required>
-    <input type="text" id="contactNumber" name="contactnumber" minlength="10" maxlength="10" value="1111111111" placeholder="Contact Number" style="width:30%;" required>
+    <input type="text" id="flat" name="flat" id="" placeholder="Flat Number/Street"  style="width:30%;" required>
+    <input type="text" id="contactNumber" name="contactnumber" minlength="10" maxlength="10"  placeholder="Contact Number" style="width:30%;" required>
     <input type="number" style="display:none;" id="totalAmt" value='<%= totalAmt %>' name="totalAmt"/> 
     <div class="paymentOptions">
         <label class="radioOuterContainer">Cards
@@ -36,27 +36,51 @@
     <input type="Submit" id="order-button1" 
     style="cursor:pointer"
     value="<%= 'Proceed to pay INR '+totalAmt+'-/-' %>">
+    
+    <div style="overflow:auto;width:100%;border-radius:inherit;">
+    <% for(var i=0;i<defaultAddress.length;i++){ %>
+    <div class="placeordersda" onclick="setAddress('<%= defaultAddress %>',this)">
+       <p><%= defaultAddress[i] %></p>
+    </div>
+    <% } %>
+    </div>
 </div>
 </div>
 <div class="align-horizontal-center">
-<div class="placeOrderIQ">
+    <div class="placeOrderIQ">
 
-    <% for(var j=0;j<items.length;j++){ %>
-     <div class="placeorderDescription">
-        <p>
-            <b>Order Name: </b><%= items[j].name %>
-        </p>
-        <p><b>From:</b> <%= stores[j].nameOfStore %></p>
-        <p>
-        <b>Order Description: </b>
-        <% for(var i=0;i<quantities.split(".")[j].split("$").length-1;i++){ %>
-            <%= quantities.split(".")[j].split("$")[i] +"("+items[j].size[i] +")"%>
-        <% } %> 
-        </p>
+        <% for(var j=0;j<items.length;j++){ %>
+        <div class="placeorderDescription">
+            <p>
+                <b>Order Name: </b><%= items[j].name %>
+            </p>
+            <p><b>From:</b> <%= store.nameOfStore %></p>
+            <p>
+            <b>Order Description: </b>
+            <% for(var i=0;i<quantities.split(".")[j].split("$").length-1;i++){ %>
+                <%= quantities.split(".")[j].split("$")[i] +"("+items[j].size[i] +")"%>
+            <% } %> 
+            </p>
+        </div>
+        <%} %>
     </div>
-     <%} %>
 </div>
-</div>
+<script>
+    function setAddress(address,y){
+        var x=address.split(" ").reverse()
+        document.getElementById("city").value=x[0]
+        setCity(x[0])
+        document.getElementById("zone").value=x[1]
+        document.getElementById("colony").value=x[2]
+        document.getElementById("landmark").value=x[3]
+        document.getElementById("flat").value=x[4]
+        for(var i=0;i<document.querySelectorAll(".placeordersda").length;i++){
+            document.querySelectorAll(".placeordersda")[i].classList.remove("activeplaceordersda");
+        }
+        y.classList.add("activeplaceordersda")
+    }
+</script>
+
 <script>
     document.getElementById("order-button1").onclick=function(e){
         var url="/api/payment/order"

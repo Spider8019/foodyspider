@@ -25,6 +25,7 @@
         <% }} 
         else{%>
             <h3><i>Your cart is empty.</i></br> Do you waana add something....</h3>
+            <a href="/">Click here to Add items</a>
         <%}%>    
     </div>
     <div class="yourFullTotal">
@@ -38,13 +39,11 @@
     //  console.log(userAccountATC)
     var itemids=""   
     var itemquan=""
-    var store=""
     userAccountATC.forEach((item)=>{
          itemids+= item.item + "."
           itemquan += item.quantity+"."
-          store+=item.storeId+"."
     })
-    var purchaseAllLink="/getdeliveryinfo/itemid/"+itemids+"/store/"+store+"/quantity/"+itemquan;
+    var purchaseAllLink="/getdeliveryinfo/itemid/"+itemids+"/store/"+userAccountATC[0].storeId+"/quantity/"+itemquan;
     document.getElementById("purchaseAll").href=purchaseAllLink
 </script>
 <%
@@ -61,6 +60,10 @@
     x.forEach((y)=>{
          cartTotal+=parseInt(y.innerHTML.slice(3,y.innerHTML.length))
     })
+    if(cartTotal==0)
+    {  document.getElementById("purchaseAll").style.opacity="0.5";
+       document.getElementById("purchaseAll").style.pointerEvents="none";
+    }
     document.getElementById("totalCart").innerHTML=cartTotal
 
 </script>

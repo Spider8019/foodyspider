@@ -133,8 +133,38 @@
     </section>
 
     <!-- delicious burger section with order now button -->
+    <section class="search-form">
+        <i class="fas fa-ice-cream"></i>
+        <i class="fas fa-hamburger"></i>
+        <i class="fas fa-cheese"></i>
+        <form action="/search" method="GET">
+            <input type="text" name="item" placeholder="Search by Item name"/>
+            <input type="text" name="location" value="<%= user.defaultCity %>" style="display:none;"/>
+
+            <input type="submit" value="Search"/>
+        </form>
+        <i class="fas fa-hotdog"></i>
+        <i class="fas fa-pizza-slice"></i>
+        <i class="fas fa-bread-slice"></i>
+    </section>
 
 
+
+    <section class="stores-corner">
+        <h1>⚞ OUR STORES IN <%= user.defaultCity %> ⚟</h1>
+        <p>This is all your support to make us capable to build 18 frenchise in gujarat state.</p>
+        <div class="stores-home">
+            <% for(var i=0;i<stores.length;i++){ %>
+               <a href="/franchise/<%= stores[i]._id %>" target="_blank" class="store-home">
+                 <img class="store-home-img" src="data:image/<%=stores[i].storeImg.contentType%>;base64,<%=stores[i].storeImg.data.toString('base64')%>" alt="our store"/>
+                 <div class="store-text">
+                    <b><%= stores[i].nameOfStore %></b>
+                    <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>
+                 </div>
+                </a>
+            <% } %>
+        </div>
+    </section> 
 
     <section class="our-lucky">
         <div class="our-lucky-boxes">
@@ -160,23 +190,6 @@
         </div>
     </section>
 
-    <section class="stores-corner">
-        <h1>⚞ OUR STORES IN <%= user.defaultCity %> ⚟</h1>
-        <p>This is all your support to make us capable to build 18 frenchise in gujarat state.</p>
-        <div class="stores-home">
-            <% for(var i=0;i<stores.length;i++){ %>
-               <a href="/franchise/<%= stores[i]._id %>" target="_blank" class="store-home">
-                 <img class="store-home-img" src="data:image/<%=stores[i].storeImg.contentType%>;base64,<%=stores[i].storeImg.data.toString('base64')%>" alt="our store"/>
-                 <div class="store-text">
-                    <b><%= stores[i].nameOfStore %></b>
-                    <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>
-                 </div>
-                </a>
-            <% } %>
-        </div>
-    </section> 
-
-
 
     <section class="offers" id="offers">
         <h1>⚞ COMBO PACKS ⚟</h1>
@@ -187,7 +200,11 @@
         </p>
         <div  class="main" >
             <div class="slider slider-for">
-                <% for(var i=0;i<offers.length;i++){ %>
+                <% if(offers.length==0){ %>
+                  <p style="font-size:5rem;text-align:Center;">No offer at this moment.</p>
+                
+                <% } else {
+                for(var i=0;i<offers.length;i++){ %>
                     <a href="https://www.google.com" class="offer ">
                         <div class="offerimages">
                             <% for(var j=0;j<offers[i].itemId.length;j++){ %>
@@ -214,7 +231,7 @@
                             </div>   
                         </div>
                     </a>
-                <% } %>
+                <% }} %>
             </div>
         </div>
 
@@ -225,20 +242,7 @@
 
 
 
-    <section class="search-form">
-        <i class="fas fa-ice-cream"></i>
-        <i class="fas fa-hamburger"></i>
-        <i class="fas fa-cheese"></i>
-        <form action="/search" method="GET">
-            <input type="text" name="item" placeholder="Search by Item name"/>
-            <input type="text" name="location" value="<%= user.defaultCity %>" style="display:none;"/>
 
-            <input type="submit" value="Search"/>
-        </form>
-        <i class="fas fa-hotdog"></i>
-        <i class="fas fa-pizza-slice"></i>
-        <i class="fas fa-bread-slice"></i>
-    </section>
     <section class="google-map">
         <div class="google-map-iframe">
             <iframe

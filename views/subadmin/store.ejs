@@ -6,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subadmin store</title>
     <link rel="stylesheet" href="/subadmin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <div>
+
         <div class="sastorefirst">
             <div class="sastorefinfo  ">
                 <p><%= store.nameOfStore %></p>
@@ -19,13 +21,15 @@
             </div>
 
 
-            <div class="earning ">
+            <div class="earning paper">
                 <h1><%= store.amountForThisMonth %></h1>
                 <p>Money you made in this month</p>
                 <h3><%= store.totalEarning %></h3>
                 <p>Total Earning</p>
             </div>
         </div>
+        <a href="#yourOrders">Your Orders</a>
+ 
         <form method="POST" action="/franchise/editStore/<%= store._id %>">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin:2rem;">
         <div class="sastoresecond paper">
@@ -38,6 +42,7 @@
             <input type="text" value="<%= store.address.split(`%`)[3] %>" name="pincode" placeholder="pincode"/>     
             <input type="text" value="<%= store.address.split(`%`)[4] %>" name="state" placeholder="State"/>
             <input type="text" value="<%= store.owner %>" name="owner" style="display:none"/> 
+            <input type="text" value="<%= store.amountForThisMonth %>" name="amountForThisMonth" style="display:none"/> 
             <p class="sastoresecondheading">Store Created At </p>
             <p><%= store.storeCreatedAt %></p>
             <p class="sastoresecondheading">Contact Mail </p>
@@ -66,6 +71,61 @@
     <input type="submit" value="Update Store">
     </form>
     </div>
+    <div class="yourOrders" id="yourOrders">
+        <h1>Your orders</h1>
+        <% for(var i=0;i<yourOrders.length;i++){ %>
+            <div class="yourOrderDiv paper">
+              <h2><%= yourOrders[i].item %></h2>
+
+              <p style="border-bottom:1px solid black;"><%= yourOrders[i].quantity %></p>
+
+
+              <h1 id="deliveredStatus"+i><%= yourOrders[i].delivered %></h1>
+
+
+              <div class="yourOrderDivInner">
+                <div>
+                    <b>Contact Number</b>
+                    <p><%= yourOrders[i].contact %></p>
+                </div>
+                <div>
+                    <b>Receipt Name</b>
+                    <p><%= yourOrders[i].reciever %></p>
+                </div>
+              </div>
+              <b>Delivery Address</b>
+              <p><%= yourOrders[i].fulladdress %></p>
+              <div class="yourOrderDivInner">
+                <div>
+                    <b>Order Id</b>
+                    <p><%= yourOrders[i]._id %></p>
+                </div>
+                <div style="margin-left:2rem;">
+                    <b>Order Date</b>
+                    <p><%= String(yourOrders[i].date).slice(0,15) %></p>               
+                </div>
+                
+              </div>
+          
+              <% if(yourOrders[i].delivered===-1){ %>
+                  <button onclick="delivered('<%= yourOrders[i]._id %>',i,this)">Delivered From Store</button>
+              <% } %>
+                  
+            </div>
+        <% } %>
+    </div>
+    <script>
+        function delivered(id,i,self){
+           $.get("/admin/orderid/"+id,function(data,status){
+               if(data.done===true){
+                self.style.display="none"
+                $("#deliveredStatus"+i).html(0)
+               }
+   
+           })
+        }
+    </script>
+
     <script>
         var x= <%- JSON.stringify( store.itemsId ) %>;
         var cb=document.querySelectorAll(".checkBox");

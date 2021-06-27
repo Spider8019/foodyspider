@@ -180,6 +180,11 @@ app.get("/wishlist/:userid", auth, async (req, res) => {
 app.post("/addtocart", auth, async (req, res) => {
   try {
     var user = await Users.findOne({ _id: req.user._id });
+    for(var i=0;i<user.addToCart.length;i++){
+      if(user.addToCart[i].storeId!=req.body.storeId){
+        return res.send("You cant add this item to cart, because it is belonging to different store")
+      }
+    }
     user.addToCart = user.addToCart.concat({
       item: req.body.id,
       quantity: req.body.quantities,
@@ -209,11 +214,10 @@ app.route("/placeorder").post(auth, async (req, res) => {
   try {
     var item = await itemModel.findOne({ _id: req.body.id });
     var storeSelected= await storeModel.findOne({_id:req.body.storeId}).select("name")
-    var user = req.user;
     res.redirect(
       "/getdeliveryinfo/itemid/" +
         item._id+"./store/"+storeSelected._id+
-        "./quantity/" +
+        "/quantity/" +
         req.body.quantities 
     );
   } catch (error) {
@@ -232,28 +236,23 @@ app
       for (var i = 0; i < itemsparam.length-1; i++) {
         var item = await itemModel.findOne({ _id: itemsparam[i] }).select("name size price");
         for(var j=0;j<quantities[i].split("$").length-1;j++){
-          console.log(item.price[j])
-          console.log(quantities[i].split("$")[j])
           totalAmt+=(item.price[j]*quantities[i].split("$")[j])
         }
         items.push(item);
       }
 
-      var storesparam = req.params.storeId.split(".");
-      var stores = [];
-      for (var i = 0; i < storesparam.length-1; i++) {
-        var store = await storeModel.findOne({ _id: storesparam[i] }).select("nameOfStore");
-        stores.push(store);
-      }
+      var storesparam = req.params.storeId;
+        var store = await storeModel.findOne({ _id: storesparam }).select("nameOfStore");
       res.render("placeOrder", {
         razorpaykeyid:process.env.RAZORPAY_KEY_ID,
         items,
-        stores,
+        store,
         quantities: req.params.quantity,
         storeId:req.params.storeId,
         username: req.user.name,
         usermail: req.user.email,
-        totalAmt
+        totalAmt,
+        defaultAddress:req.user.defaultAddress
       });
       //    res.json({})
     } catch (error) {
@@ -280,33 +279,25 @@ app.post("/api/payment/verify",auth,async(req,res)=>{
   .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET)
   .update(body.toString())
   .digest("hex");
-  // console.log("Sig"+req.body.razorpay_signature);
-  // console.log("sig"+expectedSignature);
+
   var response={status:"failure"}
   if(expectedSignature==req.body.razorpay_signature){
     response={status:"success"}
     /////////////////////add order to databases
     
       var address=req.body.flat+" "+req.body.landmark+" "+req.body.colony+" "+req.body.zone+" "+req.body.city;
-      let withoutDup =req.body.storeId.split(".").slice(0,-1).filter((c, index) => {
-        return req.body.storeId.split(".").slice(0,-1).indexOf(c) == index;
-      });
-      var x=req.body.storeId.split(".")
-      var u= await Users.findOne({_id:req.user.id},{defaultAddress:{address}})
       var luser=req.user;
-      console.log(u)
       if(!luser.defaultAddress.includes(address))
         { 
           luser.defaultAddress.push(address)
           await luser.save();
-          // await Users.updateOne({ _id: req.user._id }, { $push: { defaultAddress: address } });
         }
-      for(var i=0;i<withoutDup.length;i++){
+
          var obj={
            reciever:req.body.reciever,
            loginUserId:req.user._id,
            fulladdress:req.body.flat+" "+req.body.landmark+" "+req.body.colony+" "+req.body.zone+" "+req.body.city,
-           storeId:withoutDup[i],
+           storeId:req.body.storeId,
            email:req.body.email,
            contact:req.body.contactNumber,
            paymentMethod:req.body.paymentMethod,
@@ -314,15 +305,11 @@ app.post("/api/payment/verify",auth,async(req,res)=>{
            quantity:[],
            delivered:-1,
          }
-         for(var j=0;j<x.length-1;j++){
-           if(withoutDup[i]==x[j]){
+         for(var j=0;j<req.body.item.split(".").length-1;j++){
              obj.item.push(req.body.item.split(".")[j])
              obj.quantity.push(req.body.quantities.split(".")[j])
            }
-         }
-        }
-        console.log(req.body.totalAmt)
-        await storeModel.findOneAndUpdate({_id:req.body.storeId.split(".")[0]},{$inc:{totalEarning:req.body.totalAmt,amountForThisMonth:req.body.totalAmt}})
+        await storeModel.findOneAndUpdate({_id:req.body.storeId},{$inc:{totalEarning:req.body.totalAmt,amountForThisMonth:req.body.totalAmt}})
         await placedModel.create(obj)
   }
   res.send(response)
@@ -355,7 +342,8 @@ app
         storeDetails.description=req.body.description,
         storeDetails.owner=req.body.owner,
         storeDetails.address=req.body.address+"%"+req.body.zone+"%"+req.body.city+"%"+req.body.pincode+"%"+req.body.state,
-        storeDetails.itemsId=req.body.itemsId
+        storeDetails.itemsId=req.body.itemsId,
+        storeDetails.amountForThisMonth=req.body.amountForThisMonth,
         await storeDetails.save()
         res.redirect("/adminwork")
       }
@@ -636,11 +624,13 @@ app.route("/ordersadminside1").get(async (req, res) => {
 });
 app.route("/admin/orderid/:orderid").get(async (req, res) => {
   try {
+    console.log("yo yo")
     var order = await placedModel.updateOne(
       { _id: req.params.orderid },
       { delivered: 0 }
     );
-    res.redirect("/ordersadminside");
+    res.send({done:true})
+    // res.redirect("/ordersadminside");
   } catch (error) {
     res.render("404Error", { error });
   }
@@ -689,8 +679,7 @@ app.route("/admincreatestore")
    })
    .post(upload.single("storeImg"),async(req,res)=>{
      try{
-        // console.log(req.body)
-        // console.log(req.body.itemsId.split(","))
+
         const x={
             ...req.body,
             nameOfStore:req.body.name,
@@ -704,8 +693,7 @@ app.route("/admincreatestore")
             itemsId:req.body.itemsId.split(",")
         }
         var store=new storeModel(x)
-        // console.log(store)
-        // console.log(req.body)
+
         await store.save()
         res.send("new store is created")
      }catch(error){
@@ -763,9 +751,9 @@ app.route("/subadmin/login")
     console.log(req.body)
     var items=await itemModel.find({})
     var store=await storeModel.findOne({contactMail:req.body.email,password:req.body.password})
-    console.log(store)
+    var yourOrders=await placedModel.find({storeId:store._id})
     if(store)
-      res.render("subadmin/store",{store,items})
+      res.render("subadmin/store",{store,items,yourOrders})
     else
       res.redirect("/subadmin/login")
   }catch{(error)=>res.render("404Error",{error})}

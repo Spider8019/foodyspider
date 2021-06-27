@@ -37,6 +37,8 @@
             </div>
             <% } %>
         </div>
+        Amount you have to pay to this customer
+        <input type="number" name="amountForThisMonth" max="<%= storeDetails.amountForThisMonth %>" min="0" value="<%= storeDetails.amountForThisMonth %>"/>
         <input type="submit" value="Update Store"/>  
       </form>
     <hr/>

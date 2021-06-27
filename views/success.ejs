@@ -17,32 +17,6 @@
             <a href="/profile" onclick="(e)=>{conetti.reset()}">Go to profile</a>
         </div>
     </div>
-    <script type="module">
-        import confetti from 'https://cdn.skypack.dev/canvas-confetti';
-        var duration = 10 * 1000;
-        var end = Date.now() + duration;
 
-        (function frame() {
-        // launch a few confetti from the left edge
-        confetti({
-            particleCount:2,
-            colors:["#6e0707","#fdfd2a"],
-            startVelocity:100,
-            spread: 100,
-            origin: {
-                x: 0.5,
-                // since they fall down, start a bit higher than random
-                y: 1
-                }
-        });
-        // and launch a few from the right edge
-
-        // keep going until we are out of time
-        if (Date.now() < end) {
-            requestAnimationFrame(frame);
-        }
-        }());
-        setTimeout(function(){ window.location.pathname="/profile" }, 10000);
-    </script>
 </body>
 </html>

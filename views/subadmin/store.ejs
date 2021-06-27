@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subadmin store</title>
+    <link rel="stylesheet" href="/subadmin.css">
+</head>
+<body>
+    <div>
+        <div class="sastorefirst">
+            <div class="sastorefinfo  ">
+                <p><%= store.nameOfStore %></p>
+                <div>
+                <img src="data:image/<%=store.storeImg.contentType%>;base64,<%=store.storeImg.data.toString('base64')%>">
+                <p><%= store.owner %></p>
+                </div>
+            </div>
+
+
+            <div class="earning ">
+                <h1><%= store.amountForThisMonth %></h1>
+                <p>Money you made in this month</p>
+                <h3><%= store.totalEarning %></h3>
+                <p>Total Earning</p>
+            </div>
+        </div>
+        <form method="POST" action="/franchise/editStore/<%= store._id %>">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin:2rem;">
+        <div class="sastoresecond paper">
+            <p class="sastoresecondheading">Description </p>
+            <input type="text" name="description" value="<%= store.description %>"/>
+            <p class="sastoresecondheading">Address </p>
+            <input type="text" value="<%= store.address.split(`%`)[0] %>" name="address" placeholder="Store Address"/>
+            <input type="text" value="<%= store.address.split(`%`)[1] %>" name="zone" placeholder="zone"/>
+            <input type="text" value="<%= store.address.split(`%`)[2] %>" name="city" placeholder="city"/>  
+            <input type="text" value="<%= store.address.split(`%`)[3] %>" name="pincode" placeholder="pincode"/>     
+            <input type="text" value="<%= store.address.split(`%`)[4] %>" name="state" placeholder="State"/>
+            <input type="text" value="<%= store.owner %>" name="owner" style="display:none"/> 
+            <p class="sastoresecondheading">Store Created At </p>
+            <p><%= store.storeCreatedAt %></p>
+            <p class="sastoresecondheading">Contact Mail </p>
+            <p><%= store.contactMail %></p>
+            <p class="sastoresecondheading">Contact Number </p>
+            <p><%= store.contactNumber %></p>
+            <p class="sastoresecondheading">Days in a week </p>
+            <p><%= store.daysInAWeek %></p>
+            <p class="sastoresecondheading">Closing Time </p>
+            <p><%= store.closingTime %></p>
+            <p class="sastoresecondheading">Opening Time </p>
+            <p><%= store.openingTime %></p>
+        </div>
+        <div  class="paper">
+            <strong>Add or Remove items from your store</strong>
+            <div class="editItemsList ">
+                <% for(var i=0;i<items.length;i++){ %>
+                <div class="checkboxContainer">
+                    <input class="checkBox" type="checkbox" name="itemsId" value="<%= items[i]._id %>" name="addItems"/> 
+                    <label><%= items[i].name %></label>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="Update Store">
+    </form>
+    </div>
+    <script>
+        var x= <%- JSON.stringify( store.itemsId ) %>;
+        var cb=document.querySelectorAll(".checkBox");
+        for(var i=0;i<cb.length;i++){
+            if(x.includes(String(cb[i].value))){
+                cb[i].checked=true;
+            }      
+        }
+    </script>
+</body>
+</html>

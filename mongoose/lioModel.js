@@ -44,21 +44,6 @@ const loginoutSchema=new mongoose.Schema({
             ref:Stores,
             required:true
         }
-    }],
-    purchase:[{
-        item:{
-            type:String,
-            required:true
-        },
-        purchaseCount:{
-            type:Number,
-            default:0
-        },
-        storeId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:Stores,
-            required:true
-        }
     }]
 })
 

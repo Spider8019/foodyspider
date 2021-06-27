@@ -1,23 +1,24 @@
 <%-  include('header'); -%>
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <h1 class='placeOrderHeading'>Delivery Location</h1>
 <!-- <p class="placeOrderContent">Your Order Total is 8019</p> -->
 <div class="align-horizontal-center">
 <div class="placeOrderForm">
-    <input type="text" name="reciever" value="<%= username %>"placeholder="Deleiver to" required>
-    <input type="email" name="email" value="<%= usermail %>"placeholder="Reviever's mail id" required>
-    <select  name="city" class="city" onchange='setCity(this.value)' required>
+    <input type="text" id="reciever" name="reciever" value="<%= username %>"placeholder="Deleiver to" required>
+    <input type="email" id="email" name="email" value="<%= usermail %>"placeholder="Reviever's mail id" required>
+    <select  name="city" id="city" class="city" onchange='setCity(this.value)' required>
     </select>    
-    <input type="text" name="landmark" value="landmark" placeholder="Landmark" required>
-    <input type="text" name="colony" value="modal colony" placeholder="Colony" style="width:30%;" required>
-    <select name="zone" style="width:30%;" value="default zone" class="zone" required>
+    <input type="text" id="landmark" name="landmark" value="landmark" placeholder="Landmark" required>
+    <input type="text" id="colony" name="colony" value="modal colony" placeholder="Colony" style="width:30%;" required>
+    <select name="zone" id="zone" style="width:30%;" value="default zone" class="zone" required>
     </select>
-    <input type="text" name="flat" id="" placeholder="Flat Number/Street" value="default stret" style="width:30%;" required>
-    <input type="text" name="contactnumber" minlength="10" maxlength="10" value="1111111111" placeholder="Contact Number" style="width:30%;" required>
+    <input type="text" id="flat" name="flat" id="" placeholder="Flat Number/Street" value="default stret" style="width:30%;" required>
+    <input type="text" id="contactNumber" name="contactnumber" minlength="10" maxlength="10" value="1111111111" placeholder="Contact Number" style="width:30%;" required>
+    <input type="number" style="display:none;" id="totalAmt" value='<%= totalAmt %>' name="totalAmt"/> 
     <div class="paymentOptions">
         <label class="radioOuterContainer">Cards
-            <input name="paymentMethod" type="radio" checked="true" value="card">
+            <input id="paymentMethod" name="paymentMethod" type="radio" checked="true" value="card">
             <span class="radioInnerContainer">
                 <span class="radioSpan"><i class="far fa-credit-card"></i></span>
             </span>
@@ -30,9 +31,11 @@
         </label> -->
     </div>
     <input type="text" name="item" id="itemsid" style="display:none" >
-    <input type="text" name="quantities" value="<%= quantities %>" style="display:none">
-    <button id="checkout-button" class="paypal-custom-css"></button>
-    <input type="text" value="<%= storeId %>" name="storeId" style="display:none"/>
+    <input id="quantities" type="text" name="quantities" value="<%= quantities %>" style="display:none">
+    <input id="storeId" type="text" value="<%= storeId %>" name="storeId" style="display:none"/>
+    <input type="Submit" id="order-button1" 
+    style="cursor:pointer"
+    value="<%= 'Proceed to pay INR '+totalAmt+'-/-' %>">
 </div>
 </div>
 <div class="align-horizontal-center">
@@ -54,49 +57,88 @@
      <%} %>
 </div>
 </div>
-
-
-
-<div id="paypal-button"></div>
-
 <script>
-  paypal.Button.render({
-    env: 'sandbox', // Or 'production'
-    // Set up the payment:
-    // 1. Add a payment callback
-    payment: function(data, actions) {
-      // 2. Make a request to your server
-      return actions.request.post('/my-api/create-payment/')
-        .then(function(res) {
-          // 3. Return res.id from the response
-          return res.id;
-        });
-    },
-    // Execute the payment:
-    // 1. Add an onAuthorize callback
-    onAuthorize: function(data, actions) {
-      // 2. Make a request to your server
-      return actions.request.post('/my-api/execute-payment/', {
-        paymentID: data.paymentID,
-        payerID:   data.payerID
-      })
-        .then(function(res) {
-        //   3. Show the buyer a confirmation message.
-        console.log(res)
-        });
+    document.getElementById("order-button1").onclick=function(e){
+        var url="/api/payment/order"
+        var obj={
+            reciever:document.getElementById("reciever").value,
+            email:document.getElementById("email").value,
+            city:document.getElementById("city").value,
+            landmark:document.getElementById("landmark").value,
+            colony:document.getElementById("colony").value,
+            zone:document.getElementById("zone").value,
+            flat:document.getElementById("flat").value,
+            contactNumber:document.getElementById("contactNumber").value,
+            totalAmt:document.getElementById("totalAmt").value,
+            paymentMethod:document.getElementById("paymentMethod").value,
+            item:document.getElementById("itemsid").value,
+            quantities:document.getElementById("quantities").value,
+            storeId:document.getElementById("storeId").value,
+            totalAmt:"<%= totalAmt %>"
+        }
+        var params={
+            amount:"<%= totalAmt*100 %>",
+            currency:"INR",
+            receipt:"woodie jhones",
+            payment_capture:"1",
+
+        };
+        var xmlHttp=new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function(res){
+            if(xmlHttp.readyState==4){
+                res=JSON.parse(xmlHttp.responseText);
+                console.log(res)
+                var options={
+                "key":"<%= razorpaykeyid %>",
+                "currency":"INR",
+                "name":"WOODIE JHONES",
+                "description":"in Gujarat, West India",
+                "order_id":res.sub.id,
+                "handler":function(response){
+                    var url2="/api/payment/verify";
+                    var params2={
+                        ...obj,
+                        razorpay_order_id:response.razorpay_order_id,
+                        razorpay_payment_id:response.razorpay_payment_id,
+                        razorpay_signature:response.razorpay_signature
+                    }
+                    var xmlHttp=new XMLHttpRequest();
+                    xmlHttp.onreadystatechange=function(res){
+                        if(xmlHttp.readyState===4){
+
+                            statusObj=JSON.parse(xmlHttp.responseText);
+
+                            if(statusObj.status=="success")
+                             window.location.href="http://localhost:3000/profile?status=1"
+                        }
+                    }
+                    xmlHttp.open("post",url2,true);
+                    xmlHttp.setRequestHeader("Content-type","application/json")
+                    xmlHttp.send(JSON.stringify(params2))
+                },
+                "theme":{
+                    "color":"black"
+                }
+            };
+            var rzp1=new Razorpay(options);
+            rzp1.open();
+            e.preventDefault();
+                // document.getElementById("rzp-text").value=res.sub.id
+            }
+        }
+    xmlHttp.open("POST",url,true);
+    xmlHttp.setRequestHeader("Content-type","application/json");
+    xmlHttp.send(JSON.stringify(params))
     }
-  }, '#checkout-button');
 </script>
 
 <script>
     var itemsName=""
     var items=<%- JSON.stringify(items) %>
-    console.log(items)
     for(var i=0;i<items.length;i++)
-    {console.log(items[i])
+    {
         itemsName+=items[i].name+"."
     }
-    console.log(itemsName)
     document.getElementById("itemsid").value=itemsName
 </script>
 <script>

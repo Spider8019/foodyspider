@@ -4,106 +4,111 @@
         <h1><%= user.name %></h1>
         <i><%= user.email %></i>
     </div>
-    <button onclick="showReceiptForm()">Previous Orders</button>
+    <button ><%= user.defaultCity %></button>
+</div>
+
+<h2 style="margin:0 0 0 2rem;">Your saved Address</h2>
+<div class="yourAddresses">
+  <% if(user.defaultAddress.length==0) { %>
+    <p>No pre saved Address</p>
+  <% } else{
+    for(var i=0;i<user.defaultAddress.length;i++){ %>
+        <form method="POST" action="/reviewremoveaddress" class="yourAddress">
+          <input type="text" style="display:none" name="address" value="<%= user.defaultAddress[i] %>"/>
+          <p><%= user.defaultAddress[i] %></p>
+          <button type="submit"><i class="far fa-times-circle"></i></button>
+        </form>      
+  <% }} %>  
 </div>
 
 
+<p><%= yourReviews %></p>
 <div class="purchaseProfileContainer">
     <div class="yourPWheading">
         <p>Thanks for <br>shopping with us... </p>
+        <div class="yourOrders">
+            <div class="yourOrder" style="background:var(--clr-dark);color:var(--clr-light);">
+                <p class="yoorderid">Order Id</p>
+                <p class="yoreci">Reciever</p>
+                <p class="yodate">Order on</p>
+                <p class="yostatus">Delivery Status</p>
+                <p>Give Review For</p>
+            </div>
+        <% for(var i=0;i<yourOrders.length;i++){ %>
+            <div class="yourOrder">
+                <p class="yoorderid"><%= yourOrders[i]._id %></p>
+                <p class="yoreci"><%= yourOrders[i].reciever %></p>
+                <p class="yodate"><%= String(yourOrders[i].date).slice(0,15) %></p>
+                <p class="yostatus" style="color:<%= (yourOrders[i].delivered==-1)?'#39FF14':(yourOrders[i].delivered==0?'YELLOW':'#00ccff') %>"><%= (yourOrders[i].delivered==-1)?"In Kitchen":(yourOrders[i].delivered==0?"On the way":"Delivered") %></p>
+                <div>
+                <% for(var j=0;j<yourOrders[i].item.length;j++){ %>
+                    <button onclick="reviewForm('<%= yourOrders[i].item[j] %>','<%= yourOrders[i].storeId %>','<%= yourOrders[i].loginUserId %>','<%= yourOrders[i].date %>')"><i class="fas fa-concierge-bell"></i> Review <%= yourOrders[i].item[j] %></button>
+                <% } %>
+                </div>
+            </div>
+        <% } %>
+      </div>
     </div>
-    <div class="yourpurchases">
-    <% purchase.forEach((item,index)=>{ %>
-        <div class="yourPurchaseContainer">
-        <div class="yourpurchase">
-            <p>
-                <%= item.name %>
-            </p>
-            <div class="orderAgain">
-                <i class="fas fa-ellipsis-v"></i>
-                <div class="purchaseItemDropdown">
-                    <a href=<%= "/order/"+ item._id %>>Order Again</a>
-                    <button onclick="showReviewForm(this)">Give Review</button>
-                </div>
-            </div>
-            <div class="yourpurchaseImg">
-                <img src="data:image/<%=item.itemImg.contentType%>;base64,<%=item.itemImg.data.toString('base64')%>">
-            </div>
-            <div class="reviewContainer">
-                <button onclick="hideReviewForm(this)">+</button>
-                <div class="your-review">
-                    <form class="your-review-form" action="/review" method="POST">
-                        <h1>Your review matters</h1>
-                        <input type="text" name="itemid" value="<%= item._id %>" style="display:none"/>
-                        <input type="text" name="storeId" value="<%= user.purchase[index].storeId %>" style="display:none"/>
-                        <input type="text" name="userid" value="<%= user._id %>" style="display:none;"/>
-                        <input type="range" name="stars" min='0' max='100' required/>
-                        <input type="text" name="review" maxlength="200" placeholder="Your Review matters for us !!!" required />
-                        <input type="submit"/>
-                    </form>
-                </div>
-            </div>
-            <div class="receiptContainer">
-                <button onclick="hideReviewForm(this)">+</button>
-                <h1>Your Previous Orders</h1>
-                <div class="receiptDiv">
-                   
-                   <% for(var i=0;i<yourOrder.length;i++){ %>
-                       <div class="receiptOrder">
-                            <% var src=""
-                            if(yourOrder[i].delivered==0) 
-                            src="./images/deliveryboy.gif"
-                            else if(yourOrder[i].delivered==1) 
-                            src="./images/delivered.jpg"
-                            else if(yourOrder[i].delivered==-1)
-                            src="./images/inprocess.gif"
-                         %>
-                            <div class="orderStatusLogo">
-                                <img src=<%=src %>>
-                                
-                            </div>
 
-                           <p><b>Reciever: </b><%= yourOrder[i].reciever%></p>
-                            <p>
-                               <b>Order item: </b> <%= yourOrder[i].item %>
-                            </p>                 
-                            <p>                 
-                              <b>Order count: </b> 
-                              <%= yourOrder[i].quantity %>
-                            </p>
-                            <p>
-                                <b>Delivery Address: </b>
-                                <%= yourOrder[i].fulladdress %>
-                            </p>
-                            <p>
-                                <b>Email: </b><%= yourOrder[i].email %>
-                            </p>
-                            <p>
-                                <b>Phone: </b><%= yourOrder[i].contact %>
-                            </p>
-                            <p>
-                                <b>Date and Time: </b><%= yourOrder[i].date %>
-                            </p>
 
-                       </div>
-                    <%} %>
-                </div>
-            </div>
+
+    <div class="reviewContainer" id="reviewContainer">
+        <button onclick="hideReviewForm(this)">+</button>
+        <div class="your-review">
+            <form class="your-review-form" action="/review" method="POST">
+                <h1>Your review matters</h1>
+                <p id="itemNameRForm" style="margin-bottom:1rem;">Item name: </p>
+                <input type="text" name="itemName" id="itemName" style="display:none" />
+                <input type="text" name="storeId" id="storeId" style="display:none" />
+                <input type="text" name="userid" id="userid" style="display:none"/>
+                <input type="range" name="stars" min='0' max='100' required/>
+                <input type="text" name="review" maxlength="200" placeholder="Your Review matters for us !!!" required />
+                <input type="submit"/>
+            </form>
         </div>
-        <p style="font-size:0.8rem;height:1rem;overflow:hidden;text-overflow:ellipsis;">Ordered <b><%= user.purchase[index].purchaseCount %></b> times from <b><%= stores[index].nameOfStore %></b></p>
     </div>
-    <% }) %>
+    <div class="orderSuccessfulContainer" id="successmodal"> 
+        <div class="orderSuccessModal">
+           <h1>Hooray!</h1>
+           <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nemo, a!</p>
+        </div>
+    </div>
 </div>
-</div>
+
+<script  type="module">
+    import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+
+    var modal = document.getElementById('successmodal');
+    if(window.location.search.search("status=1")===1)
+    {
+        confetti({
+        particleCount:400,
+        startVelocity:60,
+        spread: 100,
+        origin: {
+            x: 0.5,
+            y: 1
+            }
+        });
+        document.querySelector(".orderSuccessfulContainer").style.top="0";
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.top = "-100%";
+    }
+    }
+</script>
 <script>
+    function reviewForm(itemName,storeId,userid,date){
+        document.getElementById("itemNameRForm").innerHTML="For item : "+itemName+ " on "+String(date).slice(0,15);
+        document.getElementById("itemName").value=itemName;
+        document.getElementById("storeId").value=storeId;
+        document.getElementById("userid").value=userid;
+        document.getElementById("reviewContainer").style.top="50%";
+    }
     function hideReviewForm(THIS){
-        THIS.parentElement.style.display="none";
+        THIS.parentElement.style.top="-50%";
     }
-    function showReviewForm(THIS){
-        THIS.parentElement.parentElement.nextElementSibling.nextElementSibling.style.display="grid"
-    }
-    function showReceiptForm() {
-            document.querySelector(".receiptContainer").style.display = "block"
-        }
 </script>
 <%- include('footer'); -%>

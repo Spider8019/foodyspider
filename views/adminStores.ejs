@@ -19,7 +19,7 @@
                 <p><%= stores[i].owner %></p>
                 <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>    
                 <p class="unrevealonHover"><%= stores[i].paymentInfo %></p>
-                <p><%= stores[i].description.slice(0,100) %></p>
+                <p><%= String(stores[i].description).slice(0,100) %></p>
                 <button>Expire the license</button>
                 <a href="/franchise/editStore/<%= stores[i]._id %>">Edit Store</a>
             </div>

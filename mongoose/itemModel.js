@@ -17,13 +17,13 @@ const itemSchema=new mongoose.Schema({
     description:{
         type:String
     },
-    orderCount:{
-        type:Number,
-        default:0
-    },
     itemImg:{
         data:Buffer,
         contentType:String
+    },
+    disable:{
+        type:Number,
+        default:0
     },
     createdAt:{
         type:Date,
@@ -31,5 +31,6 @@ const itemSchema=new mongoose.Schema({
         index:true
     }
 })
-
+// 0 means disabled
+// 1 means available
 module.exports=new mongoose.model("Items",itemSchema)

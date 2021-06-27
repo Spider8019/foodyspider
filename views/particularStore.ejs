@@ -13,8 +13,13 @@
             <b>Menu Items</b>
             <div class="prtStore-menu">
                 <% for (var i=0;i<storeDetails.itemsId.length;i++){ %>
-                  <a class="prtStore-menuItem" href="/order/<%=storeDetails.itemsId[i]._id %>/<%= storeDetails._id %>">
-                    <img src="data:image/<%=storeDetails.itemsId[i].itemImg.contentType%>;base64,<%=storeDetails.itemsId[i].itemImg.data.toString('base64')%>"/>
+                  <a 
+                  style="pointer-events: <%= storeDetails.itemsId[i].disable===1 ? 'none' : 'auto' %>"
+                  class="prtStore-menuItem" 
+                  href="/order/<%=storeDetails.itemsId[i]._id %>/<%= storeDetails._id %>">
+                    <img 
+                    style="filter: <%= storeDetails.itemsId[i].disable===1 ? 'grayscale(100%)' : 'grayscale(0)' %>"
+                    src="data:image/<%=storeDetails.itemsId[i].itemImg.contentType%>;base64,<%=storeDetails.itemsId[i].itemImg.data.toString('base64')%>"/>
                     <div class="prtStore-text">
                       <b><%= storeDetails.itemsId[i].name %></b>
                       <p><%= storeDetails.itemsId[i].description.slice(0,100)+"..." %></p>

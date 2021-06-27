@@ -10,31 +10,33 @@
     <script src='https://kit.fontawesome.com/a076d05399.js'></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <title>Pizza Boys SPIDER8019</title>
+    <!-- title -->
+    <title>Woodie Jhones - Gujarat</title>
+    <!-- custom styles -->
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.5.9/slick.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.5.9/slick-theme.min.css"/>
 </head>
 
 <body>
-    <section class="header">
-        <div class="navbtn nav1"></div>
-        <div class="navbtn nav2"></div>
-        <div class="navbtn nav3"></div>
-        <div class="navbtn nav4">
-            <div style="color:#fdfd2a;position:Absolute;top:50%;left:50%;padding:2rem;width:25%;overflow-y:auto;max-height:80%">
-            <h2 style="margin-bottom:1rem;">Select Your Default City</h2>
-            <form action="/changeDefaultCity" method="POST">
+    <div id="changeCityModal" >
+        <h2 style="margin-bottom:1rem;">Select Your Default City</h2>
+        <form action="/changeDefaultCity" method="POST">
             <% for(var i=0;i<cities.length;i++) { %>
               <div style="display:flex;align-items:center;padding:0.5rem;">
                   <input  type="radio" name="defaultCity" value="<%= cities[i] %>"/>
                   <label style="padding-left:0.5rem;"><%= cities[i] %></label>
               </div>
             <% } %>
-            <i  style="cursor:pointer;background:transparent;border:none;margin-top:1rem;padding:0.5rem;border:1px solid #fdfd2a;color:#fdfd2a;border-radius:0.3rem;" onclick="closeDefaultCity()" class="fas fa-times"></i>
-            <input  style="cursor:pointer;background:transparent;border:none;margin-top:1rem;padding:0.5rem;border:1px solid #fdfd2a;color:#fdfd2a;border-radius:0.3rem;" type="Submit" value="Change City"/>
-            </form>
-            </div>
-        </div>
-        <div class="navbtn nav5"></div>
+            <i onclick="closeDefaultCity()" class="fas fa-times"></i>
+            <input  class="submitButtonChangeCityModal" type="Submit" value="Change City"/>
+        </form>
+    </div>
+
+    <section class="header">
+        <img class="navbar_brand homeNavbar_brand" src="./images/Without Shadow.png" alt="header brand logo"/>
         <div class="indexUser">
             <p>Hey, <%=user.name %></p>
             <div class="userDropdown">
@@ -47,69 +49,180 @@
         <div class="content">
             <p>Lorem ipsum dolor sit amet.</p>
             <h1>PIZZA BOYS</h1>
+            <!-- <section class="search-form"> -->
+                <form action="/search" method="GET" style="width:fit-content;margin:0 auto 2rem auto;">
+                    <input type="text" name="item" placeholder="Search by Item name"/>
+                    <input type="text" name="location" value="<%= user.defaultCity %>" style="display:none;"/>
+        
+                    <input type="submit" value="Search"/>
+                </form>
+            <!-- </section> -->
+            <ul>
+                <i class="fas fa-ice-cream"></i>
+                <i class="fas fa-hamburger"></i>
+                <i class="fas fa-cheese"></i>
+                <i class="fas fa-hotdog"></i>
+                <i class="fas fa-pizza-slice"></i>
+                <i class="fas fa-bread-slice"></i>
+            </ul>
         </div>
  
     </section>
 
-<section class="offers">
-    <% for(var i=0;i<offers.length;i++){ %>
-        <a href="https://www.google.com" class="offer">
-            <div class="offerimages">
-                <% for(var j=0;j<offers[i].itemId.length;j++){ %>
-                    <!-- <img src="https://www.imagediamond.com/blog/wp-content/uploads/2019/11/attratve-Boy-DP3.jpg"/> -->
-                    <img src="https://www.imagediamond.com/blog/wp-content/uploads/2019/09/amrit_maan-16.jpg"/>
+    <!-- top products from your city stores -->
+    <section class="pizza-corner">
+        <h1>⚞ TOP PRODUCTS ⚟</h1>
+        <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa
+            praesentium voluptas molestias neque doloremque? Facere ad ullam
+            doloremque vitae! Officia consectetur odit dolores ex perferendis at in
+            fuga repellat ipsa!
+        </p>
+        <div class="pizzas">
+            <% var x=0;
+            for(var i=0;i<stores.length;i++ ){
+            for(var j=0;j<stores[i].itemsId.length;j++){
+            if(i*(j+1)>=5)
+                break;   
+            else{
+            %>
+            <a
+             style="pointer-events: <%= stores[i].itemsId[j].disable===1 ? 'none' : 'auto' %>"
+             href= <%= "order/"+ stores[i].itemsId[j]._id +"/"+ stores[i]._id %> class="pizza">
+                    <img src="data:image/<%=stores[i].itemsId[j].itemImg.contentType%>;base64,<%=stores[i].itemsId[j].itemImg.data.toString('base64')%>"
+                    style="filter: <%= stores[i].itemsId[j].disable===1 ? 'grayscale(100%)' : 'grayscale(0)' %>"
+                    >
 
-                    <img src="data:image/<%=offers[i].itemId[j].itemImg.contentType%>;base64,<%=offers[i].itemId[j].itemImg.data.toString('base64')%>" />
-                <% } %>
-                
-            </div> 
-            <div class="offerInfo">
-              <div class="offerFirstPart">
-                <h1>
-                <%= offers[i].title %>
-                </h1>
-              </div>
-            </div>
-            <div class="offerSecondaryPart">
-                <div>
-                    <p><%= offers[i].totalAmount %></p>
-                    <p style="font-size:0.8rem;font-weight:300;">Order Containes</p>
-                    <% for(var j=0;j<offers[i].itemId.length;j++){ %>
-                        <span><%= offers[i].itemId[j].name %></span>
-                    <% } %>
-                    <div>
-                        <span style="line-height:0;font-size:0.8rem;">*T&C are applied</span>
-                        <p><%= offers[i].description %></p>
-                        <p><%= offers[i].validUpto %></p>
-                    </div>   
-                </div>
-            </div>
-        </a>
-    <% } %>
-  </section>
+                    <div class="pizza-text">
+                        
+                        <div class="pizza-text-first">
+                            <p><%= stores[i].itemsId[j].name %></p>
+                            <p> ₹ <%= stores[i].itemsId[j].price[0] %><span style="font-size: 1rem">-/-<br /></span></p>
+                        </div>
+                        <div class="pizza-text-second">
+                            <div>
+                                <strong><%= stores[i].nameOfStore %></strong>
+                                <p style="font-size:0.8rem;" title='<%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%"," ") %>'><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%"," ") %></p>
+                            </div>
+                            <% if(avgRatings[x].totalReviews===0){ %>
+                                <p>No review</p>
+                                <% } else { %>
+                                <ul>
+                                    <% if((avgRatings[x].totalRatingValue/avgRatings[j].totalReviews) <= 20){ %>
+                                    <li title="0-20">😦</li>
+                                    <% }else if((avgRatings[x].totalRatingValue/avgRatings[j].totalReviews) <= 40){ %>
+                                    <li title="20-40">😐</li>
+                                    <% }else if((avgRatings[x].totalRatingValue/avgRatings[j].totalReviews) <= 60){ %>
+                                    <li title="40-60">😊</li>
+                                    <% }else if((avgRatings[x].totalRatingValue/avgRatings[j].totalReviews) <= 80){ %>                                <li title="40-60">😊</li>
+                                    <li title="60-80">😋</li>
+                                    <% } else { %>
+                                    <li title="80-100">😍</li>  
+                                    <% } %>
+                                </ul>
+                            <%  } 
+                            x++;
+                            %>
+                        </div>
+
+
+                    </div>
+            </a>
+           <% }}} %>
+        </div>
+    </section>
 
     <!-- delicious burger section with order now button -->
 
-    <section class="del">
-        <div class="del-content">
-            <h1>⚞ <%= most[1].name %> ⚟</h1>
-            <p>
-                <%= most[1].description %>
-            </p>
-            <a href=<%= 'order/'+ most[1]._id  %> target="_blank">order now</a>
+
+
+    <section class="our-lucky">
+        <div class="our-lucky-boxes">
+            <i class="fa fa-car"></i>
+
+            <h2>34.5K+</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
         </div>
-        <div class="del-img">
-            <div class="del-img-content">
-                <p>
-                    ₹ <%= most[1].price[0] %><span style="font-size: 2rem">-/-<br /></span>
-                </p>
-                <p style="font-size: 1rem">
-                    nearest store : spider8019nakafzb 224001
-                </p>
-            </div>
-            <img src="data:image/<%=most[1].itemImg.contentType%>;base64,<%=most[1].itemImg.data.toString('base64')%>">
+        <div class="our-lucky-boxes">
+            <i class="fa fa-hands-helping"></i>
+            <h2>10+</h2>
+            <p>Helping hands with NGO's</p>
+        </div>
+        <div class="our-lucky-boxes">
+            <i class="fa fa-user-alt"></i>
+            <h2><%= userCount %></h2>
+            <p>Our food lovers</p>
+        </div>
+        <div class="our-lucky-boxes">
+            <i class="fa fa-store"></i>
+            <h2><%= totalStores %></h2>
+            <p>Total Sotres across Gujarat state</p>
         </div>
     </section>
+
+    <section class="stores-corner">
+        <h1>⚞ OUR STORES IN <%= user.defaultCity %> ⚟</h1>
+        <p>This is all your support to make us capable to build 18 frenchise in gujarat state.</p>
+        <div class="stores-home">
+            <% for(var i=0;i<stores.length;i++){ %>
+               <a href="/franchise/<%= stores[i]._id %>" target="_blank" class="store-home">
+                 <img class="store-home-img" src="data:image/<%=stores[i].storeImg.contentType%>;base64,<%=stores[i].storeImg.data.toString('base64')%>" alt="our store"/>
+                 <div class="store-text">
+                    <b><%= stores[i].nameOfStore %></b>
+                    <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>
+                 </div>
+                </a>
+            <% } %>
+        </div>
+    </section> 
+
+
+
+    <section class="offers" id="offers">
+        <h1>⚞ COMBO PACKS ⚟</h1>
+        <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa
+            praesentium voluptas molestias neque doloremque? Facere ad ullam
+            doloremque vitae!
+        </p>
+        <div  class="main" >
+            <div class="slider slider-for">
+                <% for(var i=0;i<offers.length;i++){ %>
+                    <a href="https://www.google.com" class="offer ">
+                        <div class="offerimages">
+                            <% for(var j=0;j<offers[i].itemId.length;j++){ %>
+                                <img src="./images/Logo.png"/>
+                                <img src="data:image/<%=offers[i].itemId[j].itemImg.contentType%>;base64,<%=offers[i].itemId[j].itemImg.data.toString('base64')%>" />
+                            <% } %>
+                        </div> 
+                        <div class="offerInfo">
+                          <h1>
+                            <%= offers[i].title %>
+                          </h1>
+                          <hr/>
+                           <div style="background:rgb(255,255,255,0.5);backdrop-filter:blur(4px);padding:0.5rem; ">
+                            <p><%= offers[i].totalAmount %></p>
+                            <p style="font-size:0.8rem;font-weight:300;">Order Containes</p>
+                            <% for(var j=0;j<offers[i].itemId.length;j++){ %>
+                                <span><%= offers[i].itemId[j].name %></span>
+                            <% } %>
+                        </div>
+                            <div >
+                                <p><%= offers[i].description %></p>
+                                <b>Hurry up! Offer is for limited period</b>
+                                <p style="font-size:0.8rem;"><%= offers[i].validUpto %></p>
+                            </div>   
+                        </div>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- delicious burger section with order now button -->
+
 
 
     <section class="search-form">
@@ -126,141 +239,47 @@
         <i class="fas fa-pizza-slice"></i>
         <i class="fas fa-bread-slice"></i>
     </section>
-    <!-- delicious burger section with order now button -->
-
-    <section class="del">
-        <div class="del-img">
-            <div class="del-img-content">
-                <p>
-                    ₹ <%= most[0].price[0]%><span style="font-size: 2rem">-/-<br /></span>
-                </p>
-                <p style="font-size: 1rem">
-                    nearest store : spider8019nakafzb 224001
-                </p>
-            </div>
-            <img src="data:image/<%=most[0].itemImg.contentType%>;base64,<%=most[0].itemImg.data.toString('base64')%>">
-        </div>
-        <div class="del-content">
-            <h1>⚞ <%= most[0].name %> ⚟</h1>
-            <p>
-                <%= most[0].description %>
-            </p>
-            <a href=<%='order/' + most[0]._id %> target="_blank">order now</a>
-        </div>
-    </section>
-
-    <section class="our-lucky">
-        <div class="our-lucky-boxes">
-            <i class="fa fa-car"></i>
-
-            <h2>34.5K+</h2>
-            <p>Lorem ipsum dolor sit amet.</p>
-        </div>
-        <div class="our-lucky-boxes">
-            <i class="fa fa-hands-helping"></i>
-            <h2>8.9K+</h2>
-            <p>Lorem ipsum dolor sit amet.</p>
-        </div>
-        <div class="our-lucky-boxes">
-            <i class="fa fa-user-alt"></i>
-            <h2>11.2K+</h2>
-            <p>Lorem ipsum dolor sit amet.</p>
-        </div>
-        <div class="our-lucky-boxes">
-            <i class="fa fa-store"></i>
-            <h2>342</h2>
-            <p>Lorem ipsum dolor sit amet.</p>
-        </div>
-    </section>
-
-    <section class="stores-corner">
-        <h1>⚞ OUR STORES ⚟</h1>
-        <p>This is all your support to make us capable to build 18 frenchise in gujarat state.</p>
-        <div class="stores-home">
-            <% for(var i=0;i<stores.length;i++){ %>
-               <a href="/franchise/<%= stores[i]._id %>" target="_blank" class="store-home">
-                 <img class="store-home-img" src="data:image/<%=stores[i].storeImg.contentType%>;base64,<%=stores[i].storeImg.data.toString('base64')%>" alt="our store"/>
-                 <div class="store-text">
-                    <b><%= stores[i].nameOfStore %></b>
-                    <p><%= stores[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%",", ") %></p>
-                 </div>
-                </a>
-            <% } %>
-        </div>
-    </section> 
-
-
-    <section class="pizza-corner">
-        <h1>⚞ PIZZZZZZZAAAA CORNER ⚟</h1>
-        <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa
-            praesentium voluptas molestias neque doloremque? Facere ad ullam
-            doloremque vitae! Officia consectetur odit dolores ex perferendis at in
-            fuga repellat ipsa!
-        </p>
-        <div class="pizzas">
-            <% for(var i=0;i<stores.length;i++ ){
-            for(var j=0;j<stores[i].itemsId.length;j++){
-            if(i*(j+1)>=5)
-                break;   
-            else{
-            %>
-            <div class="pizza">
-                    <img src="data:image/<%=stores[i].itemsId[j].itemImg.contentType%>;base64,<%=stores[i].itemsId[j].itemImg.data.toString('base64')%>">
-                <div class="pizza-order">
-                    <h2>
-                        ₹ <%= stores[i].itemsId[j].price[0] %><span style="font-size: 1rem">-/-<br /></span>
-                    </h2>
-                    <p><%= stores[i].itemsId[j].name %></p>
-                    <a href= <%= "order/"+ stores[i].itemsId[j]._id +"/"+ stores[i]._id %>>order now</a>
-                    <div class="pizza-icons">
-                        <div class="pizza-icon">
-                        <i class="fas fa-star"></i>
-                        <span><%=  avgRatings[j].stars %> <br>(Reviews: <%= avgRatings[j].reviewCount %>) </span>
-                        </div>
-                        <div class="pizza-icon">
-                        <i class="fas fa-truck"></i>
-                        <span>
-                            <%= stores[i].itemsId[j].orderCount %>
-                        </span>
-                       </div>
-                    </div>
-                </div>
-            </div>
-           <% }}} %>
-        </div>
-          
-    </section>
     <section class="google-map">
-        <h1>⚞ ON GOOGLE MAP ⚟</h1>
-        <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Facere sunt
-            voluptas aspernatur ab numquam sapiente esse odit. Maiores rerum
-            repellendus quas eum id tempore nihil odio assumenda voluptatibus
-            commodi vitae aliquam iure repellat, nostrum architecto nulla ratione,
-            dolorum expedita voluptas? Ea mollitia veritatis quam ex numquam sit
-            assumenda voluptate doloribus.
-        </p>
-        <iframe
+        <div class="google-map-iframe">
+            <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3637711.14372046!2d78.61614218686486!3d27.079031331606775!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39994e9f7b4a09d3%3A0xf6a5476d3617249d!2sUttar%20Pradesh!5e0!3m2!1sen!2sin!4v1601896966697!5m2!1sen!2sin"
-            width="100%" height="550" frameborder="0" style="border: 0" allowfullscreen="" aria-hidden="false"
-            tabindex="0"></iframe>
+            frameborder="0"
+            style="border: 0;width:500px;height:300px;" 
+            allowfullscreen="" 
+            aria-hidden="false"
+            tabindex="0">
+            </iframe>
+        </div>
+        <div class="google-map-contact">
+            <h1>⚞ ON GOOGLE MAP ⚟</h1>
+            <p>
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Facere sunt
+                voluptas aspernatur ab numquam sapiente esse odit. Maiores rerum
+                repellendus quas eum id tempore nihil odio assumenda voluptatibus
+                commodi vitae aliquam iure repellat, nostrum architecto nulla ratione,
+                dolorum expedita voluptas? Ea mollitia veritatis quam ex numquam sit
+                assumenda voluptate doloribus.
+            </p>
+        </div>
     </section>
     <script>
-    var navbtns=document.querySelectorAll(".navbtn")
+        $('.slider-for').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay:true,
+        speed: 2000,
+        autoplaySpeed: 10000,
+        infinite:true,
+        arrows:false,
+        dots:false
+        });
+
+    var changeCityModal=document.getElementById("changeCityModal");
      function closeDefaultCity(){
-        for(var i=0;i<3;i++)
-         {
-             navbtns[i].style.left="0%"
-             navbtns[i].style.top="0%"
-         }
+        changeCityModal.style.transform="translate(-50%,-50%) scale(0)";
      }
      function showSelectDefault(){
-         for(var i=0;i<3;i++)
-         {
-             navbtns[i].style.left="100%"
-             navbtns[i].style.top="100%"
-         }
+        changeCityModal.style.transform="translate(-50%,-50%) scale(1)";
      }
     </script>
     <%- include('footer'); -%>

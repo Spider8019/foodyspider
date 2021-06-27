@@ -15,9 +15,6 @@ const storeSchema= new mongoose.Schema({
       type:String,
       required:true,
   },
-  paymentInfo:{
-      type:String,
-  },
   owner:{
       type:String,
   },
@@ -44,10 +41,25 @@ const storeSchema= new mongoose.Schema({
       type:Number,
       default:7
   },
+  contactNumber:{
+      type:Number,
+  },
+  contactMail:{
+      type:String,
+  }, 
+  amountForThisMonth:{
+    type:Number,
+    default:0
+  },
+  totalEarning:{
+      type:Number,
+      default:0
+  },
   storeCreatedAt:{
      type:Date,
      default:Date.now
-  }
+  },
+
 })
 
 module.exports= new mongoose.model("Stores",storeSchema)

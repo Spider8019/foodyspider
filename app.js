@@ -2,6 +2,9 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const crypto=require("crypto");
+const Razorpay=require("razorpay");
+const cors=require("cors")
 var cookieParser = require("cookie-parser");
 var bcrypt = require("bcryptjs");
 var fs = require("fs");
@@ -11,16 +14,23 @@ var request = require('request');
 
 const mongoose = require("mongoose");
 
-const connectdb=async () => {
-  try {
-    await mongoose.connect("mongodb+srv://spider8019:spider8019pizzaboy@cluster0.7slke.mongodb.net/firstDb?retryWrites=true&w=majority",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false})
-    console.log("Server connected successsfully")
-  } catch (err) {
-    console.log('error: ' + err)
-  }
-}
-connectdb()
+// const connectdb=async () => {
+//   try {
+//     await mongoose.connect("mongodb+srv://spider8019:spider8019pizzaboy@cluster0.7slke.mongodb.net/firstDb?retryWrites=true&w=majority",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false})
+//     console.log("Server connected successsfully")
+//   } catch (err) {
+//     console.log('error: ' + err)
+//   }
+// }
+// connectdb()
 
+ mongoose.connect("mongodb://localhost:27017/pizza-boy",{useNewUrlParser:true,useCreateIndex:true,useUnifiedTopology: true,useFindAndModify: false})
+
+// razorpay instance
+const instance=new Razorpay({
+  key_id:process.env.RAZORPAY_KEY_ID,
+  key_secret:process.env.RAZORPAY_KEY_SECRET
+})
 
 
 const cities=require("./public/js/cityarray")
@@ -38,101 +48,43 @@ var { forgetpassword } = require("./accounts/forgetpasswordemail.js");
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors());
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
-
-
-var CLIENT =
-  'AUJoKVGO3q1WA1tGgAKRdY6qx0qQNIQ6vl6D3k7y64T4qh5WozIQ7V3dl3iusw5BwXYg_T5FzLCRguP8';
-var SECRET =
-  'EOw8LNwDhM7esrQ3nHfzKc7xiWnJc83Eawln4YLfUgivfx1LGzu9Mj0F5wlarilXDqdK9Q5aHVo-VGjJ';
-var PAYPAL_API = 'https://api-m.sandbox.paypal.com';
-
-app.post('/my-api/create-payment/', function(req, res)
-{
-  // 2. Call /v1/payments/payment to set up the payment
-  request.post(PAYPAL_API + '/v1/payments/payment',
-  {
-    auth:
-    {
-      user: CLIENT,
-      pass: SECRET
-    },
-    body:
-    {
-      intent: 'sale',
-      payer:
-      {
-        payment_method: 'paypal'
-      },
-      transactions: [
-      {
-        amount:
-        {
-          total: '5.99',
-          currency: 'USD'
-        }
-      }],
-      redirect_urls:
-      {
-        return_url: 'https://example.com',
-        cancel_url: 'https://example.com'
-      }
-    },
-    json: true
-  }, function(err, response)
-  {
-    if (err)
-    {
-      console.error(err);
-      return res.sendStatus(500);
-    }
-    // 3. Return the payment ID to the client
-    res.json(
-    {
-      id: response.body.id
-    });
-  });
-})
 
 
 app
   .route("/")
   .get(auth, async (req, res) => {
-    console.log("home page")
-    var items = await itemModel.find({});
+    // var items = await itemModel.find({});
     var stores=await storeModel.find({ "address": { "$regex": req.user.defaultCity, "$options": "i" } }).populate("itemsId");
+    var totalStores= await storeModel.countDocuments()
+    var userCount=await Users.countDocuments({})
     var offers=await offersModel.find({}).populate("itemId","itemImg name");
-    let most = items;
-    most.sort((a, b) =>
-      a.orderCount > b.orderCount ? 1 : b.orderCount > a.orderCount ? -1 : 0
-    );
-    most.reverse();
+    // let most = items;
+    // most.sort((a, b) =>
+    //   a.orderCount > b.orderCount ? 1 : b.orderCount > a.orderCount ? -1 : 0
+    // );
+    // most.reverse();
 
-    var avgRatings = [];
-    for (var i = 0; i < items.length; i++) {
-
-      var ratings = await reviewModel.find({ itemid: items[i]._id });
-      var avgstars = 0;
-      if (ratings.length != 0) {
-        var allstars = 0;
-        for (var j = 0; j < ratings.length; j++) {
-          allstars += ratings[j].stars;
+    var avgRatings=[]
+    for(var i=0;i<stores.length;i++){
+      for(var j=0;j<stores[i].itemsId.length;j++){
+        var totalRatingValue=0;
+        var totalReviews=0;
+        var ratings = await reviewModel.find({ itemid: stores[i].itemsId[j]._id,storeId:stores[i]._id });
+        for(var k=0;k<ratings.length;k++){
+         totalRatingValue+=ratings[k].stars;
+         totalReviews+=1;
         }
-        avgstars = allstars / ratings.length;
-        var obj = {
-          stars: avgstars.toFixed(2),
-          reviewCount: ratings.length,
-        };
-      } else
-        var obj = {
-          stars: "No-review",
-          reviewCount: 0,
-        };
-      avgRatings.push(obj);
+        avgRatings.push({totalRatingValue,totalReviews});
+        }
     }
-    res.render("index", { result: items, user:req.user, most, avgRatings,stores,cities,offers});
+    console.log(avgRatings)
+
+ 
+    res.render("index", {  user:req.user,  avgRatings,stores,cities,offers,totalStores,userCount});
   })
 app.route("/search")
   .get(auth, async (req, res) => {
@@ -274,9 +226,16 @@ app
   .get(auth, async (req, res) => {
     try {
       var itemsparam = req.params.itemid.split(".");
+      var quantities=req.params.quantity.split(".")
       var items = [];
+      var totalAmt=0;
       for (var i = 0; i < itemsparam.length-1; i++) {
-        var item = await itemModel.findOne({ _id: itemsparam[i] }).select("name size");
+        var item = await itemModel.findOne({ _id: itemsparam[i] }).select("name size price");
+        for(var j=0;j<quantities[i].split("$").length-1;j++){
+          console.log(item.price[j])
+          console.log(quantities[i].split("$")[j])
+          totalAmt+=(item.price[j]*quantities[i].split("$")[j])
+        }
         items.push(item);
       }
 
@@ -287,94 +246,87 @@ app
         stores.push(store);
       }
       res.render("placeOrder", {
+        razorpaykeyid:process.env.RAZORPAY_KEY_ID,
         items,
         stores,
         quantities: req.params.quantity,
         storeId:req.params.storeId,
         username: req.user.name,
         usermail: req.user.email,
+        totalAmt
       });
       //    res.json({})
     } catch (error) {
       res.render("404Error", { error });
     }
   });
-app.route("/getdeliveryinfo").post(auth, async (req, res) => {
-  try {
 
-    let user=req.user.purchase
-    let withoutDup = req.body.storeId.split(".").slice(0,-1).filter((c, index) => {
-      return req.body.storeId.split(".").slice(0,-1).indexOf(c) == index;
-    });
-    var x=req.body.storeId.split(".")
-    var fulladdress =
-    req.body.flat +
-    "( " +
-    req.body.landmark +
-    "), " +
-    req.body.colony +
-    "," +
-    req.body.zone +
-    ", " +
-    req.body.city;
-    // console.log(x)
-    for(var i=0;i<withoutDup.length;i++){
-       var obj={
-         reciever:req.body.reciever,
-         loginUserId:req.user._id,
-         fulladdress:fulladdress,
-         storeId:withoutDup[i],
-         email:req.body.email,
-         contact:req.body.contactnumber,
-         paymentMethod:req.body.paymentMethod,
-         item:[],
-         quantity:[],
-         delivered:-1,
-       }
-       for(var j=0;j<x.length-1;j++){
-         if(withoutDup[i]==x[j]){
-           obj.item.push(req.body.item.split(".")[j])
-           obj.quantity.push(req.body.quantities.split(".")[j])
+
+app.post("/api/payment/order",(req,res)=>{
+  const params={"amount":req.body.amount,"currency":req.body.currency,"receipt":req.body.receipt,"payment_capture":req.body.payment_capture}
+  instance.orders
+   .create(params)
+   .then((data)=>{
+       res.send({sub:data,status:"success"})
+   })
+   .catch((error)=>{
+       res.send({sub:error,status:"failed"})
+   })
+})
+app.post("/api/payment/verify",auth,async(req,res)=>{
+
+  body=req.body.razorpay_order_id + "|"+req.body.razorpay_payment_id;
+  var expectedSignature=crypto
+  .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET)
+  .update(body.toString())
+  .digest("hex");
+  // console.log("Sig"+req.body.razorpay_signature);
+  // console.log("sig"+expectedSignature);
+  var response={status:"failure"}
+  if(expectedSignature==req.body.razorpay_signature){
+    response={status:"success"}
+    /////////////////////add order to databases
+    
+      var address=req.body.flat+" "+req.body.landmark+" "+req.body.colony+" "+req.body.zone+" "+req.body.city;
+      let withoutDup =req.body.storeId.split(".").slice(0,-1).filter((c, index) => {
+        return req.body.storeId.split(".").slice(0,-1).indexOf(c) == index;
+      });
+      var x=req.body.storeId.split(".")
+      var u= await Users.findOne({_id:req.user.id},{defaultAddress:{address}})
+      var luser=req.user;
+      console.log(u)
+      if(!luser.defaultAddress.includes(address))
+        { 
+          luser.defaultAddress.push(address)
+          await luser.save();
+          // await Users.updateOne({ _id: req.user._id }, { $push: { defaultAddress: address } });
+        }
+      for(var i=0;i<withoutDup.length;i++){
+         var obj={
+           reciever:req.body.reciever,
+           loginUserId:req.user._id,
+           fulladdress:req.body.flat+" "+req.body.landmark+" "+req.body.colony+" "+req.body.zone+" "+req.body.city,
+           storeId:withoutDup[i],
+           email:req.body.email,
+           contact:req.body.contactNumber,
+           paymentMethod:req.body.paymentMethod,
+           item:[],
+           quantity:[],
+           delivered:-1,
          }
-       }
-       await placedModel.create(obj)
-       if(req.user.purchase.length!=0){
-         for(var k=0;k<obj.item.length;k++){
-          var flag=0;
-          await itemModel.updateOne({name:obj.item[k]},{$inc : {'orderCount' : Number(obj.quantity[k].slice(0,-1))}})
-          for(var x=0;x<req.user.purchase.length;x++){
-            if(req.user.purchase[x].item==obj.item[k] && req.user.purchase[x].storeId==obj.storeId){
-              req.user.purchase[x].purchaseCount+=Number(obj.quantity[k].slice(0,obj.quantity[k].length-1))
-              flag=1;
-            }
+         for(var j=0;j<x.length-1;j++){
+           if(withoutDup[i]==x[j]){
+             obj.item.push(req.body.item.split(".")[j])
+             obj.quantity.push(req.body.quantities.split(".")[j])
            }
-          if(flag==0) {
-            var temp={
-              item:req.body.item.split(".")[0],
-              purchaseCount:1,
-              storeId:req.body.storeId.split(".")[i]}
-            req.user.purchase.push(temp)
-          }
          }
         }
-       else 
-       {
-          var temp={
-            item:req.body.item.split(".")[0],
-            purchaseCount:1,
-            storeId:req.body.storeId.split(".")[i]}
-          req.user.purchase.push(temp)
-        }
-    }
-    await req.user.save()
-    await Users.updateOne({_id:req.user._id},{purchase:req.user.purchase})
-    res.render("success");
-  } catch (error) {
-    // console.log(error)
-    res.render("404Error", { error });
+        console.log(req.body.totalAmt)
+        await storeModel.findOneAndUpdate({_id:req.body.storeId.split(".")[0]},{$inc:{totalEarning:req.body.totalAmt,amountForThisMonth:req.body.totalAmt}})
+        await placedModel.create(obj)
   }
-});
-
+  res.send(response)
+})
 //franchise client related stuffs
 app
   .route("/franchise/:storeId")
@@ -539,23 +491,12 @@ app.route("/resetpasswordaccount").post(async (req, res) => {
 ////profile section
 app.get("/profile", auth, async (req, res) => {
   try {
-    var yourOrder = await placedModel
+    var yourOrders = await placedModel
       .find({ loginUserId: req.user._id })
       .sort({ date: -1 });
-  
-    var purchase = [];
-    var stores=[];
-    // console.log(req.user)
-    for (var i = 0; i < req.user.purchase.length; i++) {
-      var item = await itemModel.findOne({ name: req.user.purchase[i].item });
-      purchase.push(item);
-      var store=await storeModel.findOne({_id:req.user.purchase[i].storeId})
-      stores.push(store)
-    }
-    // console.log(store)
 
-    // console.log(purchase)
-    res.render("profile", { user: req.user, yourOrder,purchase,stores });
+    var yourReviews=await reviewModel.find({userid:req.user._id}).sort({date:-1})
+    res.render("profile", { user: req.user, yourOrders,yourReviews});
   } catch (error) {
     res.render("404Error", { error });
   }
@@ -563,19 +504,28 @@ app.get("/profile", auth, async (req, res) => {
 //review section
 app.route("/review").post(async (req, res) => {
   try {
-    var obj = new reviewModel({
-      itemid: req.body.itemid,
+    var itemid=await itemModel.findOne({name:req.body.itemName}).select("name")
+    var obj={
+      itemid:itemid._id,
       storeId:req.body.storeId,
-      userid: req.body.userid,
-      review: req.body.review,
-      stars: req.body.stars,
-    });
-    await obj.save();
+      userid:req.body.userid,
+      stars:req.body.stars,
+      review:req.body.review
+    }
+    await reviewModel.updateOne(obj,{upsert:true})
     res.redirect("/profile");
   } catch (error) {
     res.render("404Error", { error });
   }
 });
+app.route("/reviewremoveaddress").post(auth,async(req,res)=>{
+  try{
+     await Users.updateOne({_id:req.user._id},{$pull: {defaultAddress:req.body.address}})
+     res.redirect("/profile")
+  }catch(error){
+    res.render("404Error",{error})
+  }
+})
 app.route("/newitems").get(async (req, res) => {
   try {
     var newitems = await itemModel.find({}).sort({ createdAt: -1 });
@@ -642,6 +592,14 @@ app.route("/allitems").get(async (req, res) => {
     res.render("404Error", { error });
   }
 });
+app.route("/disableitemadmin/:id").post(async(req,res)=>{
+  try{
+    await itemModel.findOneAndUpdate({_id:req.params.id},{disable:req.body.disable})
+    res.redirect("/allitems")
+  }catch (error) {
+    res.render("404Error", { error });
+  }
+})
 app.route("/removeitemadmin/:id").get(async (req, res) => {
   try {
     await itemModel.findOneAndRemove({ _id: req.params.id });
@@ -704,36 +662,15 @@ app
   .post(async (req, res) => {
     try {
       orderid = req.body.orderid;
-      code = Math.floor(Math.random() * 900000) + 100000;
-      //    console.log(code)
-      email = req.body.email;
-      await codeconfirm(email, code);
-      console.log("mail sent successfully");
-      res.render("deliveredconfiramtion");
-    } catch (error) {
-      res.render("404Error", { error });
-    }
-  });
-app
-  .route("/deliveredconfiramtion")
-  .get(async (req, res) => {
-    try {
-      res.send("<h1>OTP MATCHED! You can give order to him.</h1>");
-    } catch (error) {
-      res.render("404Error", { error });
-    }
-  })
-  .post(async (req, res) => {
-    try {
       const order = await placedModel
-        .findOne({ _id: orderid })
-        .select("delivered");
-      if (req.body.otpcode == code && order.delivered == 0) {
+      .findOne({ _id: orderid })
+      .select("delivered");
+      if ( order.delivered == 0) {
         await placedModel.updateOne({ _id: orderid }, { delivered: 1 });
-        res.redirect("/deliveredconfiramtion");
+        res.send("<h1>order delivered successfully</h1><a href='/adminwork'>go back</a>")
       } else res.redirect("/adminwork");
+
     } catch (error) {
-      // console.log(error)
       res.render("404Error", { error });
     }
   });
@@ -810,6 +747,30 @@ app.route("/adminoffer")
         res.render("404Error",{error})
       }
     })
+
+
+app.route("/subadmin/login")
+.get(async(req,res)=>{
+  try{
+    console.log("subadmin")
+    res.render("subadmin/index")
+  }catch(error){
+    res.render("404Error",{error})
+  }
+})
+.post(async(req,res)=>{
+  try{
+    console.log(req.body)
+    var items=await itemModel.find({})
+    var store=await storeModel.findOne({contactMail:req.body.email,password:req.body.password})
+    console.log(store)
+    if(store)
+      res.render("subadmin/store",{store,items})
+    else
+      res.redirect("/subadmin/login")
+  }catch{(error)=>res.render("404Error",{error})}
+})
+
 
 app.get("*",(req,res)=>{
   res.render("404Error",{error:"Page Not Found"})

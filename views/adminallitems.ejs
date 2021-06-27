@@ -11,11 +11,21 @@
     <p>You can add more items by clicking on <a href="/register">Create Items</a></p>
     <div style="display:flex;flex-wrap:wrap;justify-content:center;padding:2rem;margin-top:5rem;">
         <% for(var i=0;i<items.length;i++){ %>
-            <div style="width:35rem;padding:1rem;margin:1rem;border:1px solid grey;">
+            <div style="overflow:auto;width:12rem;padding:1rem;margin:1rem;border:1px solid grey;">
                 <strong><%= items[i].name %></strong>
                 <p><b><%= items[i]._id %></b> <%= items[i].description %></p>
-                <img src="data:image/<%=items[i].itemImg.contentType%>;base64,<%=items[i].itemImg.data.toString('base64')%>" style="width:10rem;height:10rem;object-fit:cover;">         
-                <i><strong>Sizes</strong><%= items[i].size %> <strong>Prices</strong><%= items[i].price %><strong>Total orders</strong> <%= items[i].orderCount %></i>
+                <img src="data:image/<%=items[i].itemImg.contentType%>;base64,<%=items[i].itemImg.data.toString('base64')%>" style="width:5rem;height:5rem;object-fit:cover;">         
+                <form  method="post" action="<%= '/disableitemadmin/'+items[i]._id %>">
+                   
+                    <select name="disable">
+                         <option value="0">Able</option>
+                         <option value="1">Disable</option>
+                 </select>
+                     <input type="submit" value="submit" />
+                 </form>
+                <i><strong>Sizes</strong><%= items[i].size %> <strong>Prices</strong><%= items[i].price %></i>
+                <p>Disable status<%= items[i].disable %></p>
+
                 <a href="/removeitemadmin/<%= items[i]._id %>">Remove it</a>
             </div>
         <% } %>

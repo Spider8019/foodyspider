@@ -15,21 +15,37 @@
 <!-- <i class="availableNote"></i> -->
 <div class="available-items">
     <% if(availableItems.length>0){
+        var x=0;
        for(var i=0;i<availableItems.length;i++){
+       if(availableItems[i].itemsId.length==0)
+        x++
        availableItems[i].itemsId.forEach((item)=>{ %>
-        <a href="<%= 'order/'+ item._id + '/' + availableItems[i]._id %>"><div class="available-item">
+        <a 
+        style="pointer-events: <%= item.disable===1 ? 'none' : 'auto' %>"
+        href="<%= 'order/'+ item._id + '/' + availableItems[i]._id %>">
+        <div class="available-item">
             <p class="availableItemPrice">INR <%= item.price.sort()[0] %></p>
             <div class="available-item-text">
                 <h2><%= item.name %></h2>
-                <b><%= availableItems[i].nameOfStore.slice(0,30) %></b>
+                <b><%= availableItems[i].nameOfStore.slice(0,30) %> </b>
                 <p style="font-size:0.8rem;"><%= availableItems[i].address.replace("%"," ").replace("%"," ").replace("%"," ").replace("%"," ") %></p>
             </div>
             <div class="available-item-img">
-               <img src="data:image/<%=item.itemImg.contentType%>;base64,<%=item.itemImg.data.toString('base64')%>">
+               <img
+               style="filter: <%= item.disable===1 ? 'grayscale(100%)' : 'grayscale(0)' %>"
+               src="data:image/<%=item.itemImg.contentType%>;base64,<%=item.itemImg.data.toString('base64')%>"
+               />
             </div>
         </div>
         </a>
-    <% })}} %>
+
+    <% })
+    if(x==availableItems.length){
+    %>
+        <h1 style="text-align:Center;margin:10rem;">Zero result founds for your search. Try another search</h1>
+    <% }}}else{ %>
+        <h1 style="text-align:Center;margin:10rem;">Sorry we have no stores at this place.</h1>
+    <% } %>
 </div>
 
 <script src="/order-calc.js"></script>

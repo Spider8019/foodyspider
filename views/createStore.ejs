@@ -59,7 +59,11 @@
                     <option value="1">1days</option>
                 </select>
             </fieldset>
-            <input type="text" name="paymentInfo" placeholder="Payment Info" />
+            <fieldset>
+                <legend>Contact Info</legend>
+                <input type="text" minlength="10" maxlength="10" name="contactNumber" placeholder="Contact Number"/>
+                <input type="email"  name="contactMail" placeholder="Contact Email"/>
+            </fieldset>
             <input type="text" name="owner" placeholder="Franchise Owner" />
             <textarea type="text" name="description" placeholder="Description" ></textarea>
             <input type="file" name="storeImg" accept="image/*"/>
